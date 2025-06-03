@@ -11,6 +11,7 @@ export default function Home() {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -106,6 +107,9 @@ export default function Home() {
 
       if (prediction.status === "failed") {
         setError("Falha ao processar a imagem. Tente novamente.");
+      } else if (prediction.status === "succeeded") {
+        // Mostrar o modal quando o processamento for bem-sucedido
+        setShowModal(true);
       }
     } catch (err) {
       setError(err.message || "Erro inesperado. Tente novamente.");
@@ -136,6 +140,11 @@ export default function Home() {
     setImagePreview(null);
     setPrediction(null);
     setError(null);
+    setShowModal(false);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
   };
 
   return (
@@ -204,7 +213,7 @@ export default function Home() {
         )}
 
         {/* Status da Predição */}
-        {prediction && (
+        {prediction && !showModal && (
           <div className="mb-4">
             <p className="text-sm text-gray-600">
               Status:{" "}
@@ -214,45 +223,69 @@ export default function Home() {
             </p>
           </div>
         )}
+      </div>
 
-        {/* Resultado */}
-        {prediction &&
-          prediction.output &&
-          prediction.status === "succeeded" && (
-            <div className="mt-6 text-center">
-              <h3 className="text-lg font-semibold mb-3 text-gray-700">
-                Imagem Transformada:
-              </h3>
-              <div className="flex flex-col items-center">
-                <Image
-                  src={prediction.output[prediction.output.length - 1]}
-                  alt="Imagem processada"
-                  width={500}
-                  height={500}
-                  className="rounded-lg shadow-lg object-cover mb-4"
-                />
-                <div className="flex gap-4">
+      {/* Modal de Resultado */}
+      {showModal &&
+        prediction &&
+        prediction.output &&
+        prediction.status === "succeeded" && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              {/* Header do Modal */}
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <h3 className="text-2xl font-bold text-gray-800">
+                  ✨ Imagem Transformada!
+                </h3>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600 text-2xl font-bold transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Conteúdo do Modal */}
+              <div className="p-6 text-center">
+                <div className="mb-6">
+                  <Image
+                    src={prediction.output[prediction.output.length - 1]}
+                    alt="Imagem processada"
+                    width={500}
+                    height={500}
+                    className="rounded-lg shadow-lg object-cover mx-auto"
+                  />
+                </div>
+
+                {/* Botões de Ação */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <button
                     onClick={() =>
                       handleDownload(
                         prediction.output[prediction.output.length - 1]
                       )
                     }
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2"
                   >
                     📥 Download da Imagem
                   </button>
                   <button
                     onClick={resetForm}
-                    className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2"
                   >
                     🔄 Nova Imagem
+                  </button>
+                  <button
+                    onClick={closeModal}
+                    className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2"
+                  >
+                    👁️ Apenas Fechar
                   </button>
                 </div>
               </div>
             </div>
-          )}
-      </div>
+          </div>
+        )}
     </div>
   );
 }
