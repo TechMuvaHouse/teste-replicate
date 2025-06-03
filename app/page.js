@@ -188,7 +188,7 @@ export default function Home() {
               disabled={isProcessing}
               className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors disabled:cursor-not-allowed"
             >
-              {isProcessing ? "Processando..." : "🎨 Transformar Imagem"}
+              {isProcessing ? "Processando..." : "Transformar Imagem"}
             </button>
           </div>
         )}

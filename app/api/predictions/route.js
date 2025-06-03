@@ -19,11 +19,11 @@ export async function POST(request) {
     // Criar predição usando seu deployment personalizado
     const prediction = await replicate.deployments.predictions.create(
       "techmuvahouse",
-      "testeimg2img",
+      "testeimg2img-epicrealism",
       {
         input: {
           prompt:
-            "transform all the people in the photo into dolls, keeping their characteristics. the background of the image remains the same",
+            "photograph of victorian man with wings, sky clouds, meadow grass",
           image: image, // URL da imagem
           // Adicione outros parâmetros necessários para seu modelo
           num_inference_steps: 20,
