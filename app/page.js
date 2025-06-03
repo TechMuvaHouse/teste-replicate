@@ -199,7 +199,7 @@ export default function Home() {
             <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded text-center">
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-700 mr-3"></div>
-                Processando sua imagem... Isso pode levar alguns minutos.
+                BETA: Processando sua imagem, tempo média 2 a 5 minutos...
               </div>
             </div>
           </div>
