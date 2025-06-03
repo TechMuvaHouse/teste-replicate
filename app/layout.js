@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Transformador de Imagens IA",
+  title: "MUVA + Replicate",
   description: "Transforme suas imagens usando inteligência artificial",
   keywords: [
     "IA",
@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
         <main className="min-h-screen">{children}</main>
         <footer className="bg-gray-800 text-white text-center py-4 mt-8">
           <p>
-            &copy; 2025 Transformador de Imagens IA. Todos os direitos
+            &copy; MUVA 2025 Transformador de Imagens IA. Todos os direitos
             reservados.
           </p>
         </footer>

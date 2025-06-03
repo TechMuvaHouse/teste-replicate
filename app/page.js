@@ -150,7 +150,7 @@ export default function Home() {
   return (
     <div className="container max-w-4xl mx-auto p-5">
       <h1 className="py-6 text-center font-bold text-3xl text-gray-300">
-        Transformador de Imagens IA
+        MUVA + Replicate
       </h1>
 
       <div className="bg-white rounded-lg shadow-lg p-6">
@@ -167,7 +167,7 @@ export default function Home() {
             htmlFor="image-upload"
             className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg cursor-pointer transition-colors transform hover:scale-105"
           >
-            📤 Enviar Imagem
+            Enviar Imagem
           </label>
         </div>
 
@@ -235,7 +235,7 @@ export default function Home() {
               {/* Header do Modal */}
               <div className="flex justify-between items-center p-6 border-b border-gray-200">
                 <h3 className="text-2xl font-bold text-gray-800">
-                  ✨ Imagem Transformada!
+                  Imagem Transformada!
                 </h3>
                 <button
                   onClick={closeModal}
@@ -267,19 +267,13 @@ export default function Home() {
                     }
                     className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2"
                   >
-                    📥 Download da Imagem
+                    Download da Imagem
                   </button>
                   <button
                     onClick={resetForm}
                     className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2"
                   >
-                    🔄 Nova Imagem
-                  </button>
-                  <button
-                    onClick={closeModal}
-                    className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2"
-                  >
-                    👁️ Apenas Fechar
+                    Nova Imagem
                   </button>
                 </div>
               </div>
