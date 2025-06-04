@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -12,6 +12,11 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [stream, setStream] = useState(null);
+
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -24,6 +29,76 @@ export default function Home() {
       setPrediction(null);
     }
   };
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: "user", // Câmera frontal em dispositivos móveis
+        },
+        audio: false,
+      });
+
+      setStream(mediaStream);
+      setShowCamera(true);
+
+      // Aguardar um pouco para o elemento de vídeo estar disponível
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+        }
+      }, 100);
+    } catch (err) {
+      setError("Erro ao acessar a câmera. Verifique as permissões.");
+      console.error("Erro ao acessar câmera:", err);
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+    }
+    setShowCamera(false);
+  };
+
+  const capturePhoto = useCallback(() => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext("2d");
+
+      // Definir o tamanho do canvas igual ao vídeo
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Desenhar o frame atual do vídeo no canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Converter para blob e criar arquivo
+      canvas.toBlob(
+        (blob) => {
+          const file = new File([blob], `foto-${Date.now()}.jpg`, {
+            type: "image/jpeg",
+          });
+          setSelectedImage(file);
+
+          // Criar preview
+          const reader = new FileReader();
+          reader.onload = (e) => setImagePreview(e.target.result);
+          reader.readAsDataURL(file);
+
+          setError(null);
+          setPrediction(null);
+          stopCamera();
+        },
+        "image/jpeg",
+        0.9
+      );
+    }
+  }, []);
 
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
@@ -141,6 +216,7 @@ export default function Home() {
     setPrediction(null);
     setError(null);
     setShowModal(false);
+    stopCamera();
   };
 
   const closeModal = () => {
@@ -154,22 +230,102 @@ export default function Home() {
       </h1>
 
       <div className="bg-white rounded-lg shadow-lg p-6">
-        {/* Upload de Imagem - Simplificado */}
+        {/* Upload de Imagem e Tirar Foto */}
         <div className="mb-6 text-center">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="hidden"
-            id="image-upload"
-          />
-          <label
-            htmlFor="image-upload"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg cursor-pointer transition-colors transform hover:scale-105"
-          >
-            Enviar Imagem
-          </label>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg cursor-pointer transition-colors transform hover:scale-105"
+            >
+              Enviar Imagem
+            </label>
+
+            <button
+              onClick={startCamera}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-lg transition-colors transform hover:scale-105"
+            >
+              Tirar Foto
+            </button>
+          </div>
         </div>
+
+        {/* Modal da Câmera */}
+        {showCamera && (
+          <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
+            <div className="relative w-full max-w-2xl">
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-white text-xl font-bold">
+                  Posicione seu rosto dentro da marcação
+                </h3>
+                <button
+                  onClick={stopCamera}
+                  className="text-white hover:text-gray-300 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Container do Vídeo com Sobreposição */}
+              <div className="relative bg-black rounded-lg overflow-hidden">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-auto"
+                />
+
+                {/* Sobreposição com Guia Facial */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="relative">
+                    {/* Oval para o rosto */}
+                    <div className="w-64 h-80 border-4 border-white rounded-full opacity-70 relative">
+                      {/* Cantos do oval */}
+                      <div className="absolute -top-2 -left-2 w-8 h-8 border-l-4 border-t-4 border-white rounded-tl-lg"></div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 border-r-4 border-t-4 border-white rounded-tr-lg"></div>
+                      <div className="absolute -bottom-2 -left-2 w-8 h-8 border-l-4 border-b-4 border-white rounded-bl-lg"></div>
+                      <div className="absolute -bottom-2 -right-2 w-8 h-8 border-r-4 border-b-4 border-white rounded-br-lg"></div>
+                    </div>
+
+                    {/* Texto de instrução */}
+                    <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 text-white text-center">
+                      <p className="text-sm font-medium">
+                        Mantenha o rosto centralizado e pressione capturar
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botões */}
+              <div className="flex justify-center gap-4 mt-6">
+                <button
+                  onClick={capturePhoto}
+                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105"
+                >
+                  📸 Capturar Foto
+                </button>
+                <button
+                  onClick={stopCamera}
+                  className="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition-colors transform hover:scale-105"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Canvas oculto para captura */}
+        <canvas ref={canvasRef} className="hidden" />
 
         {/* Preview da Imagem e Botão de Processar */}
         {imagePreview && (
