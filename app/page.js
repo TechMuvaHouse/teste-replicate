@@ -249,67 +249,59 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Modal da Câmera */}
+          {/* Modal da Câmera Melhorado */}
           {showCamera && (
-            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-2 sm:p-4">
-              <div className="relative w-full max-w-sm sm:max-w-2xl h-full sm:h-auto flex flex-col">
+            <div className="camera-modal-overlay">
+              <div className="camera-modal-container">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-2 sm:mb-4 flex-shrink-0">
-                  <h3 className="text-white text-base sm:text-xl font-bold">
+                <div className="camera-modal-header">
+                  <h3 className="text-lg sm:text-xl font-bold">
                     Posicione seu rosto dentro da marcação
                   </h3>
                   <button
                     onClick={stopCamera}
-                    className="text-white hover:text-gray-300 text-xl sm:text-2xl font-bold"
+                    className="text-white hover:text-gray-300 text-2xl font-bold transition-colors"
                   >
                     ×
                   </button>
                 </div>
 
                 {/* Container do Vídeo com Sobreposição */}
-                <div className="relative bg-black rounded-lg overflow-hidden flex-1 sm:flex-none">
+                <div className="camera-modal-video-container">
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
                     muted
-                    className="w-full h-full sm:h-auto object-cover"
+                    className="camera-modal-video"
                   />
 
                   {/* Sobreposição com Guia Facial */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="relative">
-                      {/* Oval para o rosto - responsivo */}
-                      <div className="w-48 h-60 sm:w-64 sm:h-80 border-4 border-white rounded-full opacity-70 relative">
-                        {/* Cantos do oval */}
-                        <div className="absolute -top-2 -left-2 w-6 h-6 sm:w-8 sm:h-8 border-l-4 border-t-4 border-white rounded-tl-lg"></div>
-                        <div className="absolute -top-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 border-r-4 border-t-4 border-white rounded-tr-lg"></div>
-                        <div className="absolute -bottom-2 -left-2 w-6 h-6 sm:w-8 sm:h-8 border-l-4 border-b-4 border-white rounded-bl-lg"></div>
-                        <div className="absolute -bottom-2 -right-2 w-6 h-6 sm:w-8 sm:h-8 border-r-4 border-b-4 border-white rounded-br-lg"></div>
-                      </div>
-
-                      {/* Texto de instrução */}
-                      <div className="absolute -bottom-12 sm:-bottom-16 left-1/2 transform -translate-x-1/2 text-white text-center px-2">
-                        <p className="text-xs sm:text-sm font-medium">
-                          Mantenha o rosto centralizado e pressione capturar
-                        </p>
-                      </div>
+                  <div className="camera-modal-overlay-guide">
+                    <div className="face-guide-oval">
+                      {/* Cantos do oval */}
+                      <div className="face-guide-corner top-left"></div>
+                      <div className="face-guide-corner top-right"></div>
+                      <div className="face-guide-corner bottom-left"></div>
+                      <div className="face-guide-corner bottom-right"></div>
                     </div>
                   </div>
                 </div>
 
-                {/* Botões */}
-                <div className="flex justify-center gap-3 sm:gap-4 mt-4 sm:mt-6 flex-shrink-0">
+                {/* Botões Estilizados */}
+                <div className="camera-modal-buttons">
                   <button
                     onClick={capturePhoto}
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-8 rounded-lg transition-colors transform hover:scale-105 text-sm sm:text-base"
+                    className="camera-button camera-button-capture"
                   >
-                    📸 Capturar Foto
+                    <span>📸</span>
+                    Capturar
                   </button>
                   <button
                     onClick={stopCamera}
-                    className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-8 rounded-lg transition-colors transform hover:scale-105 text-sm sm:text-base"
+                    className="camera-button camera-button-cancel"
                   >
+                    <span>✕</span>
                     Cancelar
                   </button>
                 </div>
@@ -380,15 +372,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Modal de Resultado */}
+      {/* Modal de Resultado Melhorado */}
       {showModal &&
         prediction &&
         prediction.output &&
         prediction.status === "succeeded" && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm sm:max-w-2xl h-full sm:h-auto max-h-screen sm:max-h-[90vh] flex flex-col">
+          <div className="result-modal-overlay">
+            <div className="result-modal-container">
               {/* Header do Modal */}
-              <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+              <div className="result-modal-header">
                 <h3 className="text-lg sm:text-2xl font-bold text-gray-800">
                   Imagem Transformada!
                 </h3>
@@ -401,21 +393,19 @@ export default function Home() {
               </div>
 
               {/* Conteúdo do Modal */}
-              <div className="p-4 sm:p-6 text-center flex-1 overflow-y-auto">
-                <div className="mb-4 sm:mb-6">
-                  <div className="relative w-full max-w-xs sm:max-w-md mx-auto">
-                    <Image
-                      src={prediction.output[prediction.output.length - 1]}
-                      alt="Imagem processada"
-                      width={500}
-                      height={500}
-                      className="rounded-lg shadow-lg object-cover w-full h-auto"
-                    />
-                  </div>
+              <div className="result-modal-content">
+                <div className="w-full max-w-md">
+                  <Image
+                    src={prediction.output[prediction.output.length - 1]}
+                    alt="Imagem processada"
+                    width={500}
+                    height={500}
+                    className="rounded-lg shadow-lg object-cover w-full h-auto"
+                  />
                 </div>
 
                 {/* Botões de Ação */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <div className="result-modal-buttons">
                   <button
                     onClick={() =>
                       handleDownload(
