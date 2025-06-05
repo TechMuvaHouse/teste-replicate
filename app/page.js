@@ -1,35 +1,38 @@
-"use client";
+import React, { useState, useRef, useCallback } from "react";
 
-import { useState, useRef, useCallback } from "react";
-import Image from "next/image";
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-export default function Home() {
+const CyberSertaoApp = () => {
+  const [currentScreen, setCurrentScreen] = useState("intro");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [prediction, setPrediction] = useState(null);
-  const [error, setError] = useState(null);
+  const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [stream, setStream] = useState(null);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
 
+  // Função para navegar entre telas
+  const navigateToScreen = (screen) => {
+    setCurrentScreen(screen);
+  };
+
+  // Função para lidar com upload de imagem
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(file);
       const reader = new FileReader();
-      reader.onload = (e) => setImagePreview(e.target.result);
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+        setCurrentScreen("preview");
+      };
       reader.readAsDataURL(file);
-      setError(null);
-      setPrediction(null);
     }
   };
 
+  // Função para iniciar câmera
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -43,6 +46,7 @@ export default function Home() {
 
       setStream(mediaStream);
       setShowCamera(true);
+      setCurrentScreen("camera");
 
       setTimeout(() => {
         if (videoRef.current) {
@@ -50,11 +54,12 @@ export default function Home() {
         }
       }, 100);
     } catch (err) {
-      setError("Erro ao acessar a câmera. Verifique as permissões.");
       console.error("Erro ao acessar câmera:", err);
+      alert("Erro ao acessar a câmera. Verifique as permissões.");
     }
   };
 
+  // Função para parar câmera
   const stopCamera = () => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
@@ -63,6 +68,7 @@ export default function Home() {
     setShowCamera(false);
   };
 
+  // Função para capturar foto
   const capturePhoto = useCallback(() => {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
@@ -82,11 +88,12 @@ export default function Home() {
           setSelectedImage(file);
 
           const reader = new FileReader();
-          reader.onload = (e) => setImagePreview(e.target.result);
+          reader.onload = (e) => {
+            setImagePreview(e.target.result);
+            setCurrentScreen("preview");
+          };
           reader.readAsDataURL(file);
 
-          setError(null);
-          setPrediction(null);
           stopCamera();
         },
         "image/jpeg",
@@ -95,338 +102,527 @@ export default function Home() {
     }
   }, []);
 
-  const uploadImageToCloudinary = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append(
-      "upload_preset",
-      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-    );
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
-
-      return data.secure_url;
-    } catch (error) {
-      throw new Error("Erro ao fazer upload da imagem: " + error.message);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedImage) {
-      setError("Por favor, selecione uma imagem primeiro.");
-      return;
-    }
-
+  // Função para processar imagem (simulação)
+  const processImage = async () => {
     setIsProcessing(true);
-    setError(null);
+    setCurrentScreen("loading");
 
-    try {
-      const imageUrl = await uploadImageToCloudinary(selectedImage);
-
-      const response = await fetch("/api/predictions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          image: imageUrl,
-        }),
-      });
-
-      let prediction = await response.json();
-
-      if (response.status !== 201) {
-        setError(prediction.detail || "Erro ao processar a imagem");
-        setIsProcessing(false);
-        return;
-      }
-
-      setPrediction(prediction);
-
-      while (
-        prediction.status !== "succeeded" &&
-        prediction.status !== "failed"
-      ) {
-        await sleep(2000);
-        const statusResponse = await fetch("/api/predictions/" + prediction.id);
-        prediction = await statusResponse.json();
-
-        if (statusResponse.status !== 200) {
-          setError(prediction.detail || "Erro ao verificar status");
-          setIsProcessing(false);
-          return;
-        }
-
-        console.log({ prediction });
-        setPrediction(prediction);
-      }
-
-      if (prediction.status === "failed") {
-        setError("Falha ao processar a imagem. Tente novamente.");
-      } else if (prediction.status === "succeeded") {
-        setShowModal(true);
-      }
-    } catch (err) {
-      setError(err.message || "Erro inesperado. Tente novamente.");
-    } finally {
+    // Simulação do processamento (substitua pela sua API real)
+    setTimeout(() => {
+      // Para demonstração, vamos usar a mesma imagem
+      setProcessedImage(imagePreview);
       setIsProcessing(false);
+      setCurrentScreen("result");
+    }, 3000);
+  };
+
+  // Função para compartilhar
+  const shareImage = async () => {
+    if (navigator.share && processedImage) {
+      try {
+        // Converter base64 para blob
+        const response = await fetch(processedImage);
+        const blob = await response.blob();
+        const file = new File([blob], "cyber-avatar.jpg", {
+          type: "image/jpeg",
+        });
+
+        await navigator.share({
+          title: "Meu Avatar Cyber Sertão 2099",
+          text: "Confira meu avatar criado no Cyber Sertão 2099!",
+          files: [file],
+        });
+      } catch (error) {
+        // Fallback: download da imagem
+        downloadImage();
+      }
+    } else {
+      downloadImage();
     }
   };
 
-  const handleDownload = async (imageUrl) => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `imagem-modificada-${Date.now()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      setError("Erro ao fazer download da imagem");
+  // Função para download da imagem
+  const downloadImage = () => {
+    if (processedImage) {
+      const link = document.createElement("a");
+      link.href = processedImage;
+      link.download = "cyber-avatar-2099.jpg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
-  const resetForm = () => {
+  // Função para resetar aplicação
+  const resetApp = () => {
     setSelectedImage(null);
     setImagePreview(null);
-    setPrediction(null);
-    setError(null);
-    setShowModal(false);
+    setProcessedImage(null);
+    setIsProcessing(false);
     stopCamera();
+    setCurrentScreen("upload");
   };
 
-  const closeModal = () => {
-    setShowModal(false);
+  // Componente de botão customizado
+  const CyberButton = ({
+    children,
+    onClick,
+    className = "",
+    variant = "primary",
+  }) => {
+    const baseClasses =
+      "relative overflow-hidden font-bold py-4 px-8 rounded-none transition-all duration-300 transform hover:scale-105 border-2";
+
+    let variantClasses = "";
+    if (variant === "primary") {
+      variantClasses =
+        "bg-gradient-to-r from-pink-500 to-purple-600 text-black border-pink-500 hover:bg-gradient-to-r hover:from-black hover:to-gray-900 hover:text-pink-500 hover:border-pink-500";
+    } else if (variant === "secondary") {
+      variantClasses =
+        "bg-gradient-to-r from-green-400 to-green-600 text-black border-green-400 hover:bg-gradient-to-r hover:from-black hover:to-gray-900 hover:text-green-400 hover:border-green-400";
+    }
+
+    return (
+      <button
+        onClick={onClick}
+        className={`${baseClasses} ${variantClasses} ${className}`}
+      >
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {children}
+        </span>
+      </button>
+    );
   };
 
-  return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-1 container max-w-4xl mx-auto p-3 sm:p-5">
-        <h1 className="py-4 sm:py-6 text-center font-bold text-2xl sm:text-3xl text-gray-300">
-          MUVA + Replicate
-        </h1>
-
-        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-          {/* Upload de Imagem e Tirar Foto */}
-          <div className="mb-4 sm:mb-6 text-center">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="image-upload"
-              />
-              <label
-                htmlFor="image-upload"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg cursor-pointer transition-colors transform hover:scale-105 text-sm sm:text-base w-full sm:w-auto"
-              >
-                Enviar Imagem
-              </label>
-
-              <button
-                onClick={startCamera}
-                className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg transition-colors transform hover:scale-105 text-sm sm:text-base w-full sm:w-auto"
-              >
-                Tirar Foto
-              </button>
-            </div>
-          </div>
-
-          {/* Modal da Câmera Melhorado */}
-          {showCamera && (
-            <div className="camera-modal-overlay">
-              <div className="camera-modal-container">
-                {/* Header */}
-                <div className="camera-modal-header">
-                  <h3 className="text-lg sm:text-xl font-bold">
-                    Posicione seu rosto dentro da marcação
-                  </h3>
-                  <button
-                    onClick={stopCamera}
-                    className="text-white hover:text-gray-300 text-2xl font-bold transition-colors"
-                  >
-                    ×
-                  </button>
-                </div>
-
-                {/* Container do Vídeo com Sobreposição */}
-                <div className="camera-modal-video-container">
-                  <video
-                    ref={videoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="camera-modal-video"
-                  />
-
-                  {/* Sobreposição com Guia Facial */}
-                  <div className="camera-modal-overlay-guide">
-                    <div className="face-guide-oval">
-                      {/* Cantos do oval */}
-                      <div className="face-guide-corner top-left"></div>
-                      <div className="face-guide-corner top-right"></div>
-                      <div className="face-guide-corner bottom-left"></div>
-                      <div className="face-guide-corner bottom-right"></div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Botões Estilizados */}
-                <div className="camera-modal-buttons">
-                  <button
-                    onClick={capturePhoto}
-                    className="camera-button camera-button-capture"
-                  >
-                    <span>📸</span>
-                    Capturar
-                  </button>
-                  <button
-                    onClick={stopCamera}
-                    className="camera-button camera-button-cancel"
-                  >
-                    <span>✕</span>
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Canvas oculto para captura */}
-          <canvas ref={canvasRef} className="hidden" />
-
-          {/* Preview da Imagem e Botão de Processar */}
-          {imagePreview && (
-            <div className="mb-4 sm:mb-6 text-center">
-              <div className="flex justify-center mb-3 sm:mb-4">
-                <div className="relative w-full max-w-xs sm:max-w-md">
-                  <Image
-                    src={imagePreview}
-                    alt="Preview da imagem"
-                    width={400}
-                    height={400}
-                    className="rounded-lg shadow-md object-cover w-full h-auto"
-                  />
-                </div>
-              </div>
-              <button
-                onClick={handleSubmit}
-                disabled={isProcessing}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors disabled:cursor-not-allowed text-sm sm:text-base w-full sm:w-auto"
-              >
-                {isProcessing ? "Processando..." : "Transformar Imagem"}
-              </button>
-            </div>
-          )}
-
-          {/* Indicador de Progresso */}
-          {isProcessing && (
-            <div className="mb-4 sm:mb-6">
-              <div className="bg-blue-100 border border-blue-400 text-blue-700 px-3 sm:px-4 py-2 sm:py-3 rounded text-center">
-                <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-700 mr-2 sm:mr-3"></div>
-                  <span className="text-sm sm:text-base">
-                    BETA: Processando sua imagem, tempo média 2 a 5 minutos...
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Exibição de Erros */}
-          {error && (
-            <div className="mb-4 sm:mb-6 bg-red-100 border border-red-400 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded">
-              <strong>Erro:</strong>{" "}
-              <span className="text-sm sm:text-base">{error}</span>
-            </div>
-          )}
-
-          {/* Status da Predição */}
-          {prediction && !showModal && (
-            <div className="mb-4">
-              <p className="text-xs sm:text-sm text-gray-600">
-                Status:{" "}
-                <span className="font-semibold capitalize">
-                  {prediction.status}
-                </span>
-              </p>
-            </div>
-          )}
+  // Tela de introdução com vídeo
+  const IntroScreen = () => (
+    <div className="min-h-screen flex flex-col bg-black relative overflow-hidden">
+      {/* Header */}
+      <div className="relative z-20 flex flex-col items-center pt-8 pb-4">
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
+          CYBER
+        </div>
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          SERTÃO
+        </div>
+        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
+          2099
         </div>
       </div>
 
-      {/* Modal de Resultado Melhorado */}
-      {showModal &&
-        prediction &&
-        prediction.output &&
-        prediction.status === "succeeded" && (
-          <div className="result-modal-overlay">
-            <div className="result-modal-container">
-              {/* Header do Modal */}
-              <div className="result-modal-header">
-                <h3 className="text-lg sm:text-2xl font-bold text-gray-800">
-                  Imagem Transformada!
-                </h3>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-400 hover:text-gray-600 text-xl sm:text-2xl font-bold transition-colors"
-                >
-                  ×
-                </button>
+      {/* Área do vídeo */}
+      <div className="flex-1 relative bg-gradient-to-b from-green-400 to-green-600 flex items-center justify-center">
+        <div className="text-6xl md:text-8xl text-black font-bold opacity-50">
+          VIDEO
+        </div>
+        {/* Aqui você colocaria seu vídeo real */}
+        {/* <video autoPlay loop muted className="w-full h-full object-cover">
+          <source src="/path-to-your-video.mp4" type="video/mp4" />
+        </video> */}
+      </div>
+
+      {/* Botão Criar Avatar */}
+      <div className="relative z-20 p-8 flex justify-center">
+        <CyberButton
+          onClick={() => navigateToScreen("terms")}
+          className="text-xl"
+        >
+          ▷ CRIAR AVATAR
+        </CyberButton>
+      </div>
+
+      {/* Footer */}
+      <div className="relative z-20 p-4 flex justify-center">
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
+          MUVA
+        </div>
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider ml-2">
+          HOUSE
+        </div>
+      </div>
+    </div>
+  );
+
+  // Tela de termos e condições
+  const TermsScreen = () => (
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-8 pb-4">
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
+          CYBER
+        </div>
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          SERTÃO
+        </div>
+        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
+          2099
+        </div>
+      </div>
+
+      {/* Área dos termos */}
+      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 p-8 overflow-y-auto">
+        <h2 className="text-black text-2xl md:text-3xl font-bold mb-6 text-center">
+          TERMOS E CONDIÇÕES
+        </h2>
+
+        <div className="bg-black bg-opacity-20 p-6 rounded-lg text-black space-y-4 max-w-2xl mx-auto">
+          <p className="text-lg">
+            Ao utilizar o Cyber Sertão 2099, você concorda com os seguintes
+            termos:
+          </p>
+
+          <ul className="space-y-2 text-base">
+            <li>
+              • Suas imagens serão processadas por inteligência artificial
+            </li>
+            <li>• O processamento pode levar de 2 a 5 minutos</li>
+            <li>• Não armazenamos suas imagens após o processamento</li>
+            <li>• Use apenas imagens próprias ou com autorização</li>
+            <li>• O serviço é fornecido sem garantias</li>
+            <li>• Proibido uso para conteúdo ofensivo ou ilegal</li>
+          </ul>
+
+          <p className="text-sm mt-4 opacity-80">
+            Esta é uma versão BETA do aplicativo. Funcionalidades podem variar.
+          </p>
+        </div>
+      </div>
+
+      {/* Botão aceitar */}
+      <div className="p-8 flex justify-center">
+        <CyberButton
+          onClick={() => navigateToScreen("upload")}
+          className="text-xl"
+        >
+          ▷ ACEITAR
+        </CyberButton>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 flex justify-center">
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
+          MUVA HOUSE
+        </div>
+      </div>
+
+      <div className="text-center text-white text-xs pb-4">
+        © CyberSertão 2099 - An original project by MUVA House. All rights
+        reserved.
+      </div>
+    </div>
+  );
+
+  // Tela de upload/captura
+  const UploadScreen = () => (
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-8 pb-4">
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
+          CYBER
+        </div>
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          SERTÃO
+        </div>
+        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
+          2099
+        </div>
+      </div>
+
+      {/* Área dos botões */}
+      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 flex flex-col justify-center items-center space-y-8 p-8">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          ref={fileInputRef}
+          className="hidden"
+        />
+
+        <CyberButton
+          onClick={() => fileInputRef.current?.click()}
+          className="text-xl w-full max-w-md"
+        >
+          ▷ ENVIAR FOTO
+        </CyberButton>
+
+        <CyberButton
+          onClick={startCamera}
+          variant="secondary"
+          className="text-xl w-full max-w-md"
+        >
+          ▷ TIRAR FOTO
+        </CyberButton>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 flex justify-center">
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
+          MUVA HOUSE
+        </div>
+      </div>
+
+      <div className="text-center text-white text-xs pb-4">
+        © CyberSertão 2099 - An original project by MUVA House. All rights
+        reserved.
+      </div>
+    </div>
+  );
+
+  // Tela da câmera
+  const CameraScreen = () => (
+    <div className="fixed inset-0 bg-black z-50 flex flex-col">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-4 pb-2 relative z-10">
+        <div className="text-white text-2xl md:text-4xl font-bold tracking-wider transform -skew-x-12">
+          CYBER SERTÃO 2099
+        </div>
+      </div>
+
+      {/* Área da câmera */}
+      <div className="flex-1 relative bg-gradient-to-b from-blue-400 to-blue-600 overflow-hidden">
+        {showCamera && (
+          <>
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+
+            {/* Sobreposição com guia facial */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="relative">
+                {/* Oval principal */}
+                <div className="w-48 h-60 md:w-64 md:h-80 border-4 border-pink-500 rounded-full opacity-70"></div>
+
+                {/* Cantos */}
+                <div className="absolute -top-2 -left-2 w-6 h-6 border-l-4 border-t-4 border-pink-500 rounded-tl-lg"></div>
+                <div className="absolute -top-2 -right-2 w-6 h-6 border-r-4 border-t-4 border-pink-500 rounded-tr-lg"></div>
+                <div className="absolute -bottom-2 -left-2 w-6 h-6 border-l-4 border-b-4 border-pink-500 rounded-bl-lg"></div>
+                <div className="absolute -bottom-2 -right-2 w-6 h-6 border-r-4 border-b-4 border-pink-500 rounded-br-lg"></div>
               </div>
+            </div>
+          </>
+        )}
+      </div>
 
-              {/* Conteúdo do Modal */}
-              <div className="result-modal-content">
-                <div className="w-full max-w-md">
-                  <Image
-                    src={prediction.output[prediction.output.length - 1]}
-                    alt="Imagem processada"
-                    width={500}
-                    height={500}
-                    className="rounded-lg shadow-lg object-cover w-full h-auto"
-                  />
-                </div>
+      {/* Botões */}
+      <div className="p-4 flex justify-center space-x-4 relative z-10">
+        <CyberButton
+          onClick={capturePhoto}
+          variant="secondary"
+          className="text-lg"
+        >
+          ▷ CAPTURAR
+        </CyberButton>
 
-                {/* Botões de Ação */}
-                <div className="result-modal-buttons">
-                  <button
-                    onClick={() =>
-                      handleDownload(
-                        prediction.output[prediction.output.length - 1]
-                      )
-                    }
-                    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
-                  >
-                    Download da Imagem
-                  </button>
-                  <button
-                    onClick={resetForm}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors transform hover:scale-105 flex items-center justify-center gap-2 text-sm sm:text-base"
-                  >
-                    Nova Imagem
-                  </button>
-                </div>
+        <CyberButton
+          onClick={() => {
+            stopCamera();
+            navigateToScreen("upload");
+          }}
+          className="text-lg"
+        >
+          ✕ CANCELAR
+        </CyberButton>
+      </div>
+
+      <canvas ref={canvasRef} className="hidden" />
+    </div>
+  );
+
+  // Tela de preview
+  const PreviewScreen = () => (
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-8 pb-4">
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
+          CYBER
+        </div>
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          SERTÃO
+        </div>
+        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
+          2099
+        </div>
+      </div>
+
+      {/* Área da imagem */}
+      <div className="flex-1 bg-gradient-to-b from-blue-400 to-blue-600 relative p-8">
+        {imagePreview && (
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="relative max-w-sm md:max-w-md">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-full h-auto object-cover rounded-lg shadow-2xl"
+              />
+              {/* Sobreposição com cantos */}
+              <div className="absolute inset-0">
+                <div className="absolute -top-2 -left-2 w-8 h-8 border-l-4 border-t-4 border-pink-500 rounded-tl-lg"></div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 border-r-4 border-t-4 border-pink-500 rounded-tr-lg"></div>
+                <div className="absolute -bottom-2 -left-2 w-8 h-8 border-l-4 border-b-4 border-pink-500 rounded-bl-lg"></div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 border-r-4 border-b-4 border-pink-500 rounded-br-lg"></div>
               </div>
             </div>
           </div>
         )}
+      </div>
+
+      {/* Botões */}
+      <div className="p-8 flex justify-center space-x-4">
+        <CyberButton
+          onClick={processImage}
+          variant="secondary"
+          className="text-xl"
+        >
+          ▷ GOSTOU?
+        </CyberButton>
+
+        <CyberButton onClick={resetApp} className="text-xl">
+          ▷ DE NOVO
+        </CyberButton>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 flex justify-center">
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
+          MUVA HOUSE
+        </div>
+      </div>
     </div>
   );
-}
+
+  // Tela de loading
+  const LoadingScreen = () => (
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-8 pb-4">
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
+          CYBER
+        </div>
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          SERTÃO
+        </div>
+        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
+          2099
+        </div>
+      </div>
+
+      {/* Área de loading */}
+      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 flex flex-col justify-center items-center">
+        {/* Spinner circular */}
+        <div className="relative w-32 h-32 md:w-48 md:h-48 mb-8">
+          <div className="absolute inset-0 border-8 border-pink-500 rounded-full animate-spin border-t-transparent"></div>
+          <div
+            className="absolute inset-4 border-4 border-purple-300 rounded-full animate-spin border-b-transparent"
+            style={{ animationDirection: "reverse", animationDuration: "0.8s" }}
+          ></div>
+          <div className="absolute inset-8 w-16 h-16 md:w-24 md:h-24 bg-pink-500 rounded-full flex items-center justify-center">
+            <div className="w-4 h-4 md:w-6 md:h-6 bg-purple-800 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <div className="text-green-400 text-lg md:text-xl font-bold mb-2">
+            FASE BETA / LOADING AI THINKING
+          </div>
+          <div className="text-green-400 text-base md:text-lg">
+            Tempo médio 1 minuto.
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 flex justify-center">
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
+          MUVA HOUSE
+        </div>
+      </div>
+    </div>
+  );
+
+  // Tela de resultado
+  const ResultScreen = () => (
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-8 pb-4">
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
+          CYBER
+        </div>
+        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
+          SERTÃO
+        </div>
+        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
+          2099
+        </div>
+      </div>
+
+      {/* Área da imagem processada */}
+      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 relative p-8">
+        {processedImage && (
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="relative max-w-sm md:max-w-md">
+              <img
+                src={processedImage}
+                alt="Imagem processada"
+                className="w-full h-auto object-cover rounded-lg shadow-2xl"
+              />
+              {/* Efeito cyberpunk */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-20 animate-pulse"></div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Botão compartilhar */}
+      <div className="p-8 flex justify-center">
+        <CyberButton
+          onClick={shareImage}
+          variant="secondary"
+          className="text-xl"
+        >
+          ▷ COMPARTILHAR
+        </CyberButton>
+      </div>
+
+      {/* Footer */}
+      <div className="p-4 flex justify-center">
+        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
+          MUVA HOUSE
+        </div>
+      </div>
+    </div>
+  );
+
+  // Renderização da tela atual
+  const renderCurrentScreen = () => {
+    switch (currentScreen) {
+      case "intro":
+        return <IntroScreen />;
+      case "terms":
+        return <TermsScreen />;
+      case "upload":
+        return <UploadScreen />;
+      case "camera":
+        return <CameraScreen />;
+      case "preview":
+        return <PreviewScreen />;
+      case "loading":
+        return <LoadingScreen />;
+      case "result":
+        return <ResultScreen />;
+      default:
+        return <IntroScreen />;
+    }
+  };
+
+  return (
+    <div className="w-full max-w-md mx-auto bg-black min-h-screen">
+      {renderCurrentScreen()}
+    </div>
+  );
+};
+
+export default CyberSertaoApp;
