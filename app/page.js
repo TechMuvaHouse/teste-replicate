@@ -204,7 +204,7 @@ const CyberSertaoApp = () => {
       <div className="relative z-20 flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src="/logo_muva.png"
+          src="/nome_app.png"
           width={400}
           height={200}
           className="w-auto h-auto max-w-[300px] sm:max-w-[400px] lg:max-w-[500px]"
@@ -461,30 +461,11 @@ const CyberSertaoApp = () => {
     </div>
   );
 
-  // Tela de preview
+  // Tela de preview - CORRIGIDA
   const PreviewScreen = () => (
-    <div className="min-h-screen flex flex-col bg-black relative">
-      {/* Imagem de fundo centralizada */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        {imagePreview && (
-          <div className="relative w-full h-full">
-            <Image
-              src={imagePreview}
-              alt="Preview"
-              fill
-              className="object-cover object-center"
-              style={{
-                objectPosition: "center center",
-              }}
-            />
-            {/* Overlay escuro para melhor legibilidade */}
-            <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-          </div>
-        )}
-      </div>
-
-      {/* Header sobreposto */}
-      <div className="relative z-10 flex flex-col items-center pt-8 pb-4">
+    <div className="min-h-screen flex flex-col bg-black">
+      {/* Header */}
+      <div className="flex flex-col items-center pt-8 pb-4 relative z-10">
         <Image
           alt="logo_superior"
           src="/nome_app.png"
@@ -494,11 +475,38 @@ const CyberSertaoApp = () => {
         />
       </div>
 
-      {/* Spacer para centralizar conteúdo */}
-      <div className="flex-1"></div>
+      {/* Área da imagem - CORRIGIDA */}
+      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 flex items-center justify-center p-4">
+        {imagePreview && (
+          <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
+            <img
+              src={imagePreview}
+              alt="Preview da imagem"
+              className="w-full h-auto max-h-[60vh] object-contain rounded-lg shadow-2xl border-2 border-pink-500"
+              style={{
+                backgroundColor: "transparent",
+              }}
+            />
+            {/* Debug - remover depois */}
+            {!imagePreview && (
+              <div className="text-white text-center p-4">
+                Imagem não carregada
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Fallback caso imagePreview esteja null */}
+        {!imagePreview && (
+          <div className="text-white text-center p-4">
+            <div className="text-xl mb-2">Erro ao carregar imagem</div>
+            <div className="text-sm opacity-75">Tente novamente</div>
+          </div>
+        )}
+      </div>
 
       {/* Botões */}
-      <div className="relative z-10 p-8 flex justify-center space-x-4">
+      <div className="p-8 flex justify-center space-x-4 relative z-10">
         <CyberButton
           onClick={processImage}
           variant="secondary"
@@ -513,7 +521,7 @@ const CyberSertaoApp = () => {
       </div>
 
       {/* Footer */}
-      <div className="relative z-10 p-4 flex justify-center">
+      <div className="p-4 flex justify-center relative z-10">
         <Image
           alt="logo_muva"
           src="/logo_muva.png"
@@ -576,7 +584,7 @@ const CyberSertaoApp = () => {
     </div>
   );
 
-  // Tela de resultado
+  // Tela de resultado - CORRIGIDA
   const ResultScreen = () => (
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
@@ -590,33 +598,33 @@ const CyberSertaoApp = () => {
         />
       </div>
 
-      {/* Área da imagem processada */}
-      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 relative p-8">
+      {/* Área da imagem processada - CORRIGIDA */}
+      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 flex items-center justify-center p-4">
         {processedImage && (
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl">
-              <Image
-                src={processedImage}
-                alt="Imagem processada"
-                width={400}
-                height={600}
-                className="w-full h-auto object-cover rounded-lg shadow-2xl"
-              />
-              {/* Efeito cyberpunk */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-20 animate-pulse"></div>
-            </div>
+          <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
+            <img
+              src={processedImage}
+              alt="Imagem processada"
+              className="w-full h-auto max-h-[60vh] object-contain rounded-lg shadow-2xl border-2 border-green-400"
+            />
+            {/* Efeito cyberpunk */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-20 animate-pulse rounded-lg"></div>
           </div>
         )}
       </div>
 
-      {/* Botão compartilhar */}
-      <div className="p-8 flex justify-center">
+      {/* Botões */}
+      <div className="p-8 flex justify-center space-x-4">
         <CyberButton
           onClick={shareImage}
           variant="secondary"
           className="text-xl lg:text-2xl"
         >
           ▷ COMPARTILHAR
+        </CyberButton>
+
+        <CyberButton onClick={resetApp} className="text-xl lg:text-2xl">
+          ▷ NOVA FOTO
         </CyberButton>
       </div>
 
