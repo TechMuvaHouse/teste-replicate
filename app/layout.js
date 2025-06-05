@@ -29,12 +29,6 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100`}
       >
         <main className="min-h-screen">{children}</main>
-        <footer className="bg-gray-800 text-white text-center py-4 mt-8">
-          <p>
-            &copy; MUVA 2025 Transformador de Imagens IA. Todos os direitos
-            reservados.
-          </p>
-        </footer>
       </body>
     </html>
   );

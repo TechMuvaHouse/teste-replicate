@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import React, { useState, useRef, useCallback } from "react";
 
 const CyberSertaoApp = () => {
@@ -201,15 +202,12 @@ const CyberSertaoApp = () => {
     <div className="min-h-screen flex flex-col bg-black relative overflow-hidden">
       {/* Header */}
       <div className="relative z-20 flex flex-col items-center pt-8 pb-4">
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
-          CYBER
-        </div>
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          SERTÃO
-        </div>
-        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
-          2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src="*/public/nome_app.png"
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área do vídeo */}
@@ -217,10 +215,10 @@ const CyberSertaoApp = () => {
         <div className="text-6xl md:text-8xl text-black font-bold opacity-50">
           VIDEO
         </div>
-        {/* Aqui você colocaria seu vídeo real */}
-        {/* <video autoPlay loop muted className="w-full h-full object-cover">
-          <source src="/path-to-your-video.mp4" type="video/mp4" />
-        </video> */}
+        {/* Colocando o video */}
+        <video autoPlay loop muted className="w-full h-full object-cover">
+          <source src={"*/public/video_loop.mp4"} type="video/mp4" />
+        </video>
       </div>
 
       {/* Botão Criar Avatar */}
@@ -235,12 +233,12 @@ const CyberSertaoApp = () => {
 
       {/* Footer */}
       <div className="relative z-20 p-4 flex justify-center">
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
-          MUVA
-        </div>
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider ml-2">
-          HOUSE
-        </div>
+        <Image
+          alt="logo_muva"
+          src={"*/public/logo_muva.png"}
+          width="200"
+          height="100"
+        />
       </div>
     </div>
   );
@@ -250,41 +248,48 @@ const CyberSertaoApp = () => {
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-4">
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
-          CYBER
-        </div>
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          SERTÃO
-        </div>
-        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
-          2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src="*/public/nome_app.png"
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área dos termos */}
-      <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 p-8 overflow-y-auto">
+      <div className="flex-1 bg-purple-800 p-8 overflow-y-auto">
         <h2 className="text-black text-2xl md:text-3xl font-bold mb-6 text-center">
           TERMOS E CONDIÇÕES
         </h2>
 
-        <div className="bg-black bg-opacity-20 p-6 rounded-lg text-black space-y-4 max-w-2xl mx-auto">
+        <div className="bg-purple-800 text-black space-y-4 max-w-2xl mx-auto">
           <p className="text-lg">
             Ao utilizar o Cyber Sertão 2099, você concorda com os seguintes
             termos:
           </p>
 
-          <ul className="space-y-2 text-base">
-            <li>
+          <ul className="space-y-2 text-base text-black bg-purple-800">
+            <li className="text-black">
               • Suas imagens serão processadas por inteligência artificial
             </li>
-            <li>• O processamento pode levar de 2 a 5 minutos</li>
-            <li>• Não armazenamos suas imagens após o processamento</li>
-            <li>• Use apenas imagens próprias ou com autorização</li>
-            <li>• O serviço é fornecido sem garantias</li>
-            <li>• Proibido uso para conteúdo ofensivo ou ilegal</li>
+            <li className="text-black">
+              • O processamento pode levar de 2 a 5 minutos
+            </li>
+            <li className="text-black">
+              • Não armazenamos suas imagens após o processamento
+            </li>
+            <li className="text-black">
+              • Use apenas imagens próprias ou com autorização
+            </li>
+            <li className="text-black">
+              • O serviço é fornecido sem garantias
+            </li>
+            <li className="text-black">
+              • Proibido uso para conteúdo ofensivo ou ilegal
+            </li>
           </ul>
 
-          <p className="text-sm mt-4 opacity-80">
+          <p className="text-black text-sm mt-4 opacity-80 bg-purple-800">
             Esta é uma versão BETA do aplicativo. Funcionalidades podem variar.
           </p>
         </div>
@@ -302,12 +307,15 @@ const CyberSertaoApp = () => {
 
       {/* Footer */}
       <div className="p-4 flex justify-center">
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
-          MUVA HOUSE
-        </div>
+        <Image
+          alt="logo_muva"
+          src={"*/public/logo_muva.png"}
+          width="200"
+          height="100"
+        />
       </div>
 
-      <div className="text-center text-white text-xs pb-4">
+      <div className="text-center text-green-400 text-xs pb-4">
         © CyberSertão 2099 - An original project by MUVA House. All rights
         reserved.
       </div>
@@ -319,15 +327,12 @@ const CyberSertaoApp = () => {
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-4">
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
-          CYBER
-        </div>
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          SERTÃO
-        </div>
-        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
-          2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src={"*/public/nome_app.png"}
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área dos botões */}
@@ -358,12 +363,15 @@ const CyberSertaoApp = () => {
 
       {/* Footer */}
       <div className="p-4 flex justify-center">
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
-          MUVA HOUSE
-        </div>
+        <Image
+          alt="logo_muva"
+          src={"*/public/logo_muva.png"}
+          width="200"
+          height="100"
+        />
       </div>
 
-      <div className="text-center text-white text-xs pb-4">
+      <div className="text-center text-green-400 text-xs pb-4">
         © CyberSertão 2099 - An original project by MUVA House. All rights
         reserved.
       </div>
@@ -375,9 +383,12 @@ const CyberSertaoApp = () => {
     <div className="fixed inset-0 bg-black z-50 flex flex-col">
       {/* Header */}
       <div className="flex flex-col items-center pt-4 pb-2 relative z-10">
-        <div className="text-white text-2xl md:text-4xl font-bold tracking-wider transform -skew-x-12">
-          CYBER SERTÃO 2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src="*/public/nome_app.png"
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área da câmera */}
@@ -439,15 +450,12 @@ const CyberSertaoApp = () => {
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-4">
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
-          CYBER
-        </div>
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          SERTÃO
-        </div>
-        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
-          2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src="*/public/nome_app.png"
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área da imagem */}
@@ -455,7 +463,7 @@ const CyberSertaoApp = () => {
         {imagePreview && (
           <div className="absolute inset-0 flex items-center justify-center p-8">
             <div className="relative max-w-sm md:max-w-md">
-              <img
+              <Image
                 src={imagePreview}
                 alt="Preview"
                 className="w-full h-auto object-cover rounded-lg shadow-2xl"
@@ -489,9 +497,12 @@ const CyberSertaoApp = () => {
 
       {/* Footer */}
       <div className="p-4 flex justify-center">
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
-          MUVA HOUSE
-        </div>
+        <Image
+          alt="logo_muva"
+          src={"*/public/logo_muva.png"}
+          width="200"
+          height="100"
+        />
       </div>
     </div>
   );
@@ -501,15 +512,12 @@ const CyberSertaoApp = () => {
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-4">
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
-          CYBER
-        </div>
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          SERTÃO
-        </div>
-        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
-          2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src="*/public/nome_app.png"
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área de loading */}
@@ -538,9 +546,12 @@ const CyberSertaoApp = () => {
 
       {/* Footer */}
       <div className="p-4 flex justify-center">
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
-          MUVA HOUSE
-        </div>
+        <Image
+          alt="logo_muva"
+          src={"*/public/logo_muva.png"}
+          width="200"
+          height="100"
+        />
       </div>
     </div>
   );
@@ -550,15 +561,12 @@ const CyberSertaoApp = () => {
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
       <div className="flex flex-col items-center pt-8 pb-4">
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12">
-          CYBER
-        </div>
-        <div className="text-white text-4xl md:text-6xl font-bold tracking-wider transform -skew-x-12 bg-gradient-to-r from-pink-500 to-purple-600 bg-clip-text text-transparent">
-          SERTÃO
-        </div>
-        <div className="text-white text-lg md:text-xl tracking-[0.5rem] mt-2">
-          2099
-        </div>
+        <Image
+          alt="logo_superior"
+          src="*/public/nome_app.png"
+          width="400"
+          height="200"
+        />
       </div>
 
       {/* Área da imagem processada */}
@@ -566,7 +574,7 @@ const CyberSertaoApp = () => {
         {processedImage && (
           <div className="absolute inset-0 flex items-center justify-center p-8">
             <div className="relative max-w-sm md:max-w-md">
-              <img
+              <Image
                 src={processedImage}
                 alt="Imagem processada"
                 className="w-full h-auto object-cover rounded-lg shadow-2xl"
@@ -591,9 +599,12 @@ const CyberSertaoApp = () => {
 
       {/* Footer */}
       <div className="p-4 flex justify-center">
-        <div className="text-pink-500 text-2xl md:text-3xl font-bold tracking-wider">
-          MUVA HOUSE
-        </div>
+        <Image
+          alt="logo_muva"
+          src={"*/public/logo_muva.png"}
+          width="200"
+          height="100"
+        />
       </div>
     </div>
   );
