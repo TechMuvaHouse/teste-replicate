@@ -23,7 +23,7 @@ export async function POST(request) {
       {
         input: {
           prompt:
-            "photograph of victorian man with wings, sky clouds, meadow grass",
+            "cyberpunk futuristic portrait, neon lights, digital art, high quality, detailed",
           image: image, // URL da imagem
           // Adicione outros parâmetros necessários para seu modelo
           num_inference_steps: 20,
