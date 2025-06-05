@@ -105,18 +105,180 @@ const CyberSertaoApp = () => {
     }
   }, []);
 
-  // Função para processar imagem (simulação)
+  //processImage:
+
   const processImage = async () => {
     setIsProcessing(true);
     setCurrentScreen("loading");
 
-    // Simulação do processamento (substitua pela sua API real)
-    setTimeout(() => {
-      // Para demonstração, vamos usar a mesma imagem
-      setProcessedImage(imagePreview);
+    try {
+      // 1. Primeiro, precisamos converter a imagem para um formato que o Replicate aceite
+      // Vamos enviar a imagem em base64 para o servidor
+
+      const response = await fetch("/api/process-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: imagePreview, // Base64 da imagem
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.status}`);
+      }
+
+      const prediction = await response.json();
+
+      // 2. Agora vamos polling para verificar o status da predição
+      let finalPrediction = prediction;
+      let attempts = 0;
+      const maxAttempts = 60; // 5 minutos máximo (5 segundos * 60)
+
+      while (
+        finalPrediction.status !== "succeeded" &&
+        finalPrediction.status !== "failed" &&
+        attempts < maxAttempts
+      ) {
+        // Aguarda 5 segundos antes de verificar novamente
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        const statusResponse = await fetch(
+          `/api/predictions/${finalPrediction.id}`
+        );
+
+        if (!statusResponse.ok) {
+          throw new Error(`Erro ao verificar status: ${statusResponse.status}`);
+        }
+
+        finalPrediction = await statusResponse.json();
+        attempts++;
+
+        console.log(
+          `Tentativa ${attempts}: Status = ${finalPrediction.status}`
+        );
+      }
+
+      if (finalPrediction.status === "succeeded" && finalPrediction.output) {
+        // Se o output for um array, pega o primeiro item, senão usa diretamente
+        const outputImage = Array.isArray(finalPrediction.output)
+          ? finalPrediction.output[0]
+          : finalPrediction.output;
+
+        setProcessedImage(outputImage);
+        setCurrentScreen("result");
+      } else if (finalPrediction.status === "failed") {
+        throw new Error(
+          finalPrediction.error || "Falha no processamento da imagem"
+        );
+      } else {
+        throw new Error("Timeout: O processamento demorou mais que o esperado");
+      }
+    } catch (error) {
+      console.error("Erro ao processar imagem:", error);
+      alert(`Erro ao processar imagem: ${error.message}`);
+      setCurrentScreen("preview"); // Volta para preview em caso de erro
+    } finally {
       setIsProcessing(false);
-      setCurrentScreen("result");
-    }, 3000);
+    }
+  };
+
+  // Adicione também esta função para fazer upload da imagem se necessário:
+  const uploadImageToCloudinary = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", imageFile);
+      formData.append("upload_preset", "your_upload_preset"); // Configure no Cloudinary
+
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
+      return result.secure_url;
+    } catch (error) {
+      console.error("Erro no upload para Cloudinary:", error);
+      throw error;
+    }
+  };
+
+  // Versão alternativa da processImage se você quiser usar Cloudinary:
+  const processImageWithCloudinary = async () => {
+    setIsProcessing(true);
+    setCurrentScreen("loading");
+
+    try {
+      // 1. Upload da imagem para Cloudinary
+      let imageUrl;
+
+      if (selectedImage) {
+        imageUrl = await uploadImageToCloudinary(selectedImage);
+      } else {
+        throw new Error("Nenhuma imagem selecionada");
+      }
+
+      // 2. Enviar URL da imagem para o Replicate
+      const response = await fetch("/api/process-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: imageUrl, // URL da imagem no Cloudinary
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.status}`);
+      }
+
+      const prediction = await response.json();
+
+      // 3. Polling para verificar o status
+      let finalPrediction = prediction;
+      let attempts = 0;
+      const maxAttempts = 60;
+
+      while (
+        finalPrediction.status !== "succeeded" &&
+        finalPrediction.status !== "failed" &&
+        attempts < maxAttempts
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+
+        const statusResponse = await fetch(
+          `/api/predictions/${finalPrediction.id}`
+        );
+        finalPrediction = await statusResponse.json();
+        attempts++;
+      }
+
+      if (finalPrediction.status === "succeeded" && finalPrediction.output) {
+        const outputImage = Array.isArray(finalPrediction.output)
+          ? finalPrediction.output[0]
+          : finalPrediction.output;
+
+        setProcessedImage(outputImage);
+        setCurrentScreen("result");
+      } else if (finalPrediction.status === "failed") {
+        throw new Error(
+          finalPrediction.error || "Falha no processamento da imagem"
+        );
+      } else {
+        throw new Error("Timeout no processamento");
+      }
+    } catch (error) {
+      console.error("Erro ao processar imagem:", error);
+      alert(`Erro ao processar imagem: ${error.message}`);
+      setCurrentScreen("preview");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   // Função para compartilhar
