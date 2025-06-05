@@ -204,21 +204,35 @@ const CyberSertaoApp = () => {
       <div className="relative z-20 flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src="*/public/nome_app.png"
-          width="400"
-          height="200"
+          src="/logo_muva.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
+          priority
         />
       </div>
 
       {/* Área do vídeo */}
       <div className="flex-1 relative bg-gradient-to-b from-green-400 to-green-600 flex items-center justify-center">
-        <div className="text-6xl md:text-8xl text-black font-bold opacity-50">
-          VIDEO
-        </div>
-        {/* Colocando o video */}
-        <video autoPlay loop muted className="w-full h-full object-cover">
-          <source src={"*/public/video_loop.mp4"} type="video/mp4" />
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover absolute inset-0"
+        >
+          <source src="/video_loop.mp4" type="video/mp4" />
+          {/* Fallback caso o vídeo não carregue */}
+          <div className="text-6xl md:text-8xl text-black font-bold opacity-50 flex items-center justify-center h-full">
+            VIDEO
+          </div>
         </video>
+        {/* Overlay caso o vídeo não carregue */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-6xl md:text-8xl text-black font-bold opacity-30">
+            CYBER SERTÃO
+          </div>
+        </div>
       </div>
 
       {/* Botão Criar Avatar */}
@@ -235,9 +249,10 @@ const CyberSertaoApp = () => {
       <div className="relative z-20 p-4 flex justify-center">
         <Image
           alt="logo_muva"
-          src={"*/public/logo_muva.png"}
-          width="200"
-          height="100"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[150px] sm:max-w-[200px]"
         />
       </div>
     </div>
@@ -250,9 +265,10 @@ const CyberSertaoApp = () => {
       <div className="flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src="*/public/nome_app.png"
-          width="400"
-          height="200"
+          src="/nome_app.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
         />
       </div>
 
@@ -309,9 +325,10 @@ const CyberSertaoApp = () => {
       <div className="p-4 flex justify-center">
         <Image
           alt="logo_muva"
-          src={"*/public/logo_muva.png"}
-          width="200"
-          height="100"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[150px] sm:max-w-[200px]"
         />
       </div>
 
@@ -329,9 +346,10 @@ const CyberSertaoApp = () => {
       <div className="flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src={"*/public/nome_app.png"}
-          width="400"
-          height="200"
+          src="/nome_app.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
         />
       </div>
 
@@ -365,9 +383,10 @@ const CyberSertaoApp = () => {
       <div className="p-4 flex justify-center">
         <Image
           alt="logo_muva"
-          src={"*/public/logo_muva.png"}
-          width="200"
-          height="100"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[150px] sm:max-w-[200px]"
         />
       </div>
 
@@ -385,9 +404,10 @@ const CyberSertaoApp = () => {
       <div className="flex flex-col items-center pt-4 pb-2 relative z-10">
         <Image
           alt="logo_superior"
-          src="*/public/nome_app.png"
-          width="400"
-          height="200"
+          src="/nome_app.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
         />
       </div>
 
@@ -452,9 +472,10 @@ const CyberSertaoApp = () => {
       <div className="flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src="*/public/nome_app.png"
-          width="400"
-          height="200"
+          src="/nome_app.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
         />
       </div>
 
@@ -466,6 +487,8 @@ const CyberSertaoApp = () => {
               <Image
                 src={imagePreview}
                 alt="Preview"
+                width={400}
+                height={600}
                 className="w-full h-auto object-cover rounded-lg shadow-2xl"
               />
               {/* Sobreposição com cantos */}
@@ -499,9 +522,10 @@ const CyberSertaoApp = () => {
       <div className="p-4 flex justify-center">
         <Image
           alt="logo_muva"
-          src={"*/public/logo_muva.png"}
-          width="200"
-          height="100"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[150px] sm:max-w-[200px]"
         />
       </div>
     </div>
@@ -514,9 +538,10 @@ const CyberSertaoApp = () => {
       <div className="flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src="*/public/nome_app.png"
-          width="400"
-          height="200"
+          src="/nome_app.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
         />
       </div>
 
@@ -548,9 +573,10 @@ const CyberSertaoApp = () => {
       <div className="p-4 flex justify-center">
         <Image
           alt="logo_muva"
-          src={"*/public/logo_muva.png"}
-          width="200"
-          height="100"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[150px] sm:max-w-[200px]"
         />
       </div>
     </div>
@@ -563,9 +589,10 @@ const CyberSertaoApp = () => {
       <div className="flex flex-col items-center pt-8 pb-4">
         <Image
           alt="logo_superior"
-          src="*/public/nome_app.png"
-          width="400"
-          height="200"
+          src="/nome_app.png"
+          width={400}
+          height={200}
+          className="w-auto h-auto max-w-[300px] sm:max-w-[400px]"
         />
       </div>
 
@@ -577,6 +604,8 @@ const CyberSertaoApp = () => {
               <Image
                 src={processedImage}
                 alt="Imagem processada"
+                width={400}
+                height={600}
                 className="w-full h-auto object-cover rounded-lg shadow-2xl"
               />
               {/* Efeito cyberpunk */}
@@ -601,9 +630,10 @@ const CyberSertaoApp = () => {
       <div className="p-4 flex justify-center">
         <Image
           alt="logo_muva"
-          src={"*/public/logo_muva.png"}
-          width="200"
-          height="100"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[150px] sm:max-w-[200px]"
         />
       </div>
     </div>
@@ -632,7 +662,7 @@ const CyberSertaoApp = () => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-black min-h-screen">
+    <div className="w-full max-w-md mx-auto bg-black min-h-screen lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl">
       {renderCurrentScreen()}
     </div>
   );
