@@ -3,11 +3,16 @@
 import Image from "next/image";
 import React, { useState, useRef, useCallback } from "react";
 
+// Função helper para delay
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 const CyberSertaoApp = () => {
   const [currentScreen, setCurrentScreen] = useState("intro");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [processedImage, setProcessedImage] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [stream, setStream] = useState(null);
@@ -32,6 +37,8 @@ const CyberSertaoApp = () => {
         setCurrentScreen("preview");
       };
       reader.readAsDataURL(file);
+      setError(null);
+      setPrediction(null);
     }
   };
 
@@ -58,6 +65,7 @@ const CyberSertaoApp = () => {
       }, 100);
     } catch (err) {
       console.error("Erro ao acessar câmera:", err);
+      setError("Erro ao acessar a câmera. Verifique as permissões.");
       alert("Erro ao acessar a câmera. Verifique as permissões.");
     }
   };
@@ -97,6 +105,8 @@ const CyberSertaoApp = () => {
           };
           reader.readAsDataURL(file);
 
+          setError(null);
+          setPrediction(null);
           stopCamera();
         },
         "image/jpeg",
@@ -105,78 +115,100 @@ const CyberSertaoApp = () => {
     }
   }, []);
 
-  //processImage:
-
-  const processImage = async () => {
-    setIsProcessing(true);
-    setCurrentScreen("loading");
+  // Função para fazer upload para Cloudinary
+  const uploadImageToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append(
+      "upload_preset",
+      process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+    );
 
     try {
-      // 1. Primeiro, precisamos converter a imagem para um formato que o Replicate aceite
-      // Vamos enviar a imagem em base64 para o servidor
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      const data = await response.json();
 
-      const response = await fetch("/api/process-image", {
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+
+      return data.secure_url;
+    } catch (error) {
+      throw new Error("Erro ao fazer upload da imagem: " + error.message);
+    }
+  };
+
+  // Função principal para processar imagem (versão corrigida)
+  const processImage = async () => {
+    if (!selectedImage) {
+      setError("Por favor, selecione uma imagem primeiro.");
+      return;
+    }
+
+    setIsProcessing(true);
+    setCurrentScreen("loading");
+    setError(null);
+
+    try {
+      // 1. Upload da imagem para Cloudinary
+      const imageUrl = await uploadImageToCloudinary(selectedImage);
+
+      // 2. Criar predição no Replicate
+      const response = await fetch("/api/predictions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          image: imagePreview, // Base64 da imagem
+          image: imageUrl,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.status}`);
+      let prediction = await response.json();
+
+      if (response.status !== 201) {
+        throw new Error(prediction.detail || "Erro ao processar a imagem");
       }
 
-      const prediction = await response.json();
+      setPrediction(prediction);
 
-      // 2. Agora vamos polling para verificar o status da predição
-      let finalPrediction = prediction;
-      let attempts = 0;
-      const maxAttempts = 60; // 5 minutos máximo (5 segundos * 60)
-
+      // 3. Polling para verificar o status
       while (
-        finalPrediction.status !== "succeeded" &&
-        finalPrediction.status !== "failed" &&
-        attempts < maxAttempts
+        prediction.status !== "succeeded" &&
+        prediction.status !== "failed"
       ) {
-        // Aguarda 5 segundos antes de verificar novamente
-        await new Promise((resolve) => setTimeout(resolve, 5000));
+        await sleep(2000);
+        const statusResponse = await fetch("/api/predictions/" + prediction.id);
+        prediction = await statusResponse.json();
 
-        const statusResponse = await fetch(
-          `/api/predictions/${finalPrediction.id}`
-        );
-
-        if (!statusResponse.ok) {
-          throw new Error(`Erro ao verificar status: ${statusResponse.status}`);
+        if (statusResponse.status !== 200) {
+          throw new Error(prediction.detail || "Erro ao verificar status");
         }
 
-        finalPrediction = await statusResponse.json();
-        attempts++;
-
-        console.log(
-          `Tentativa ${attempts}: Status = ${finalPrediction.status}`
-        );
+        console.log({ prediction });
+        setPrediction(prediction);
       }
 
-      if (finalPrediction.status === "succeeded" && finalPrediction.output) {
+      if (prediction.status === "failed") {
+        throw new Error("Falha ao processar a imagem. Tente novamente.");
+      } else if (prediction.status === "succeeded") {
         // Se o output for um array, pega o primeiro item, senão usa diretamente
-        const outputImage = Array.isArray(finalPrediction.output)
-          ? finalPrediction.output[0]
-          : finalPrediction.output;
+        const outputImage = Array.isArray(prediction.output)
+          ? prediction.output[0]
+          : prediction.output;
 
         setProcessedImage(outputImage);
         setCurrentScreen("result");
-      } else if (finalPrediction.status === "failed") {
-        throw new Error(
-          finalPrediction.error || "Falha no processamento da imagem"
-        );
-      } else {
-        throw new Error("Timeout: O processamento demorou mais que o esperado");
       }
     } catch (error) {
       console.error("Erro ao processar imagem:", error);
+      setError(error.message || "Erro inesperado. Tente novamente.");
       alert(`Erro ao processar imagem: ${error.message}`);
       setCurrentScreen("preview"); // Volta para preview em caso de erro
     } finally {
@@ -184,108 +216,11 @@ const CyberSertaoApp = () => {
     }
   };
 
-  // Adicione também esta função para fazer upload da imagem se necessário:
-  const uploadImageToCloudinary = async (imageFile) => {
-    try {
-      const formData = new FormData();
-      formData.append("file", imageFile);
-      formData.append("upload_preset", "your_upload_preset"); // Configure no Cloudinary
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/your_cloud_name/image/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const result = await response.json();
-      return result.secure_url;
-    } catch (error) {
-      console.error("Erro no upload para Cloudinary:", error);
-      throw error;
-    }
-  };
-
-  // Versão alternativa da processImage se você quiser usar Cloudinary:
-  const processImageWithCloudinary = async () => {
-    setIsProcessing(true);
-    setCurrentScreen("loading");
-
-    try {
-      // 1. Upload da imagem para Cloudinary
-      let imageUrl;
-
-      if (selectedImage) {
-        imageUrl = await uploadImageToCloudinary(selectedImage);
-      } else {
-        throw new Error("Nenhuma imagem selecionada");
-      }
-
-      // 2. Enviar URL da imagem para o Replicate
-      const response = await fetch("/api/process-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          image: imageUrl, // URL da imagem no Cloudinary
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.status}`);
-      }
-
-      const prediction = await response.json();
-
-      // 3. Polling para verificar o status
-      let finalPrediction = prediction;
-      let attempts = 0;
-      const maxAttempts = 60;
-
-      while (
-        finalPrediction.status !== "succeeded" &&
-        finalPrediction.status !== "failed" &&
-        attempts < maxAttempts
-      ) {
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-
-        const statusResponse = await fetch(
-          `/api/predictions/${finalPrediction.id}`
-        );
-        finalPrediction = await statusResponse.json();
-        attempts++;
-      }
-
-      if (finalPrediction.status === "succeeded" && finalPrediction.output) {
-        const outputImage = Array.isArray(finalPrediction.output)
-          ? finalPrediction.output[0]
-          : finalPrediction.output;
-
-        setProcessedImage(outputImage);
-        setCurrentScreen("result");
-      } else if (finalPrediction.status === "failed") {
-        throw new Error(
-          finalPrediction.error || "Falha no processamento da imagem"
-        );
-      } else {
-        throw new Error("Timeout no processamento");
-      }
-    } catch (error) {
-      console.error("Erro ao processar imagem:", error);
-      alert(`Erro ao processar imagem: ${error.message}`);
-      setCurrentScreen("preview");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Função para compartilhar
+  // Função para compartilhar/download
   const shareImage = async () => {
     if (navigator.share && processedImage) {
       try {
-        // Converter base64 para blob
+        // Converter URL para blob
         const response = await fetch(processedImage);
         const blob = await response.blob();
         const file = new File([blob], "cyber-avatar.jpg", {
@@ -307,14 +242,23 @@ const CyberSertaoApp = () => {
   };
 
   // Função para download da imagem
-  const downloadImage = () => {
+  const downloadImage = async () => {
     if (processedImage) {
-      const link = document.createElement("a");
-      link.href = processedImage;
-      link.download = "cyber-avatar-2099.jpg";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      try {
+        const response = await fetch(processedImage);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `cyber-avatar-2099-${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Erro ao fazer download:", error);
+        setError("Erro ao fazer download da imagem");
+      }
     }
   };
 
@@ -323,6 +267,8 @@ const CyberSertaoApp = () => {
     setSelectedImage(null);
     setImagePreview(null);
     setProcessedImage(null);
+    setPrediction(null);
+    setError(null);
     setIsProcessing(false);
     stopCamera();
     setCurrentScreen("upload");
@@ -623,7 +569,7 @@ const CyberSertaoApp = () => {
     </div>
   );
 
-  // Tela de preview - CORRIGIDA
+  // Tela de preview
   const PreviewScreen = () => (
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
@@ -637,9 +583,9 @@ const CyberSertaoApp = () => {
         />
       </div>
 
-      {/* Área da imagem - CORRIGIDA */}
+      {/* Área da imagem */}
       <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 flex items-center justify-center p-4">
-        {imagePreview && (
+        {imagePreview ? (
           <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
             <img
               src={imagePreview}
@@ -649,17 +595,8 @@ const CyberSertaoApp = () => {
                 backgroundColor: "transparent",
               }}
             />
-            {/* Debug - remover depois */}
-            {!imagePreview && (
-              <div className="text-white text-center p-4">
-                Imagem não carregada
-              </div>
-            )}
           </div>
-        )}
-
-        {/* Fallback caso imagePreview esteja null */}
-        {!imagePreview && (
+        ) : (
           <div className="text-white text-center p-4">
             <div className="text-xl mb-2">Erro ao carregar imagem</div>
             <div className="text-sm opacity-75">Tente novamente</div>
@@ -667,14 +604,20 @@ const CyberSertaoApp = () => {
         )}
       </div>
 
+      {/* Mostrar erro se houver */}
+      {error && (
+        <div className="p-4 bg-red-600 text-white text-center">{error}</div>
+      )}
+
       {/* Botões */}
       <div className="p-8 flex justify-center space-x-4 relative z-10">
         <CyberButton
           onClick={processImage}
           variant="secondary"
           className="text-xl lg:text-2xl"
+          disabled={isProcessing}
         >
-          ▷ GOSTOU?
+          {isProcessing ? "PROCESSANDO..." : "▷ GOSTOU?"}
         </CyberButton>
 
         <CyberButton onClick={resetApp} className="text-xl lg:text-2xl">
@@ -728,8 +671,13 @@ const CyberSertaoApp = () => {
             FASE BETA / LOADING AI THINKING
           </div>
           <div className="text-green-400 text-base md:text-lg lg:text-xl">
-            Tempo médio 1 minuto.
+            Tempo médio 1-2 minutos.
           </div>
+          {error && (
+            <div className="text-red-400 text-base md:text-lg lg:text-xl mt-4">
+              {error}
+            </div>
+          )}
         </div>
       </div>
 
@@ -746,7 +694,7 @@ const CyberSertaoApp = () => {
     </div>
   );
 
-  // Tela de resultado - CORRIGIDA
+  // Tela de resultado
   const ResultScreen = () => (
     <div className="min-h-screen flex flex-col bg-black">
       {/* Header */}
@@ -760,7 +708,7 @@ const CyberSertaoApp = () => {
         />
       </div>
 
-      {/* Área da imagem processada - CORRIGIDA */}
+      {/* Área da imagem processada */}
       <div className="flex-1 bg-gradient-to-b from-purple-600 to-purple-800 flex items-center justify-center p-4">
         {processedImage && (
           <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
