@@ -19,15 +19,12 @@ export async function POST(request) {
     // Criar predição usando seu deployment personalizado
     const prediction = await replicate.deployments.predictions.create(
       "techmuvahouse",
-      "testeimg2img-epicrealism",
+      "mode-final-img2img",
       {
         input: {
-          prompt:
-            "cyberpunk futuristic portrait, neon lights, digital art, high quality, detailed",
           image: image, // URL da imagem
           // Adicione outros parâmetros necessários para seu modelo
-          num_inference_steps: 20,
-          guidance_scale: 7.5,
+
           seed: Math.floor(Math.random() * 1000000),
         },
       }
