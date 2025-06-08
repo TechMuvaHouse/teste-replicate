@@ -278,7 +278,7 @@ const CyberSertaoApp = () => {
           src="/logo_muva.png"
           width={200}
           height={100}
-          className="w-auto h-auto max-w-[170px] sm:max-w-[230px] lg:max-w-[285px]"
+          className="w-auto h-auto max-w-[170px] sm:max-w-[200px] lg:max-w-[160px] xl:max-w-[140px]"
         />
       </div>
       {!hideCopyright && (
@@ -402,7 +402,7 @@ const CyberSertaoApp = () => {
             src="/logo_muva.png"
             width={200}
             height={100}
-            className="w-auto h-auto max-w-[170px] sm:max-w-[230px] lg:max-w-[285px]"
+            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] lg:max-w-[160px] xl:max-w-[140px]"
           />
         </div>
       </div>
