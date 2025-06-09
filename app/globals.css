@@ -86,6 +86,21 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Efeito de vazamento consistente para logo superior - 35% em todos os dispositivos */
+.logo-superior-consistent-bleeding {
+  position: relative;
+  z-index: 30;
+  transform: translateY(35%);
+}
+
+/* Efeito de vazamento consistente para botões - 50% em todos os dispositivos */
+.consistent-bleeding-button {
+  position: relative;
+  z-index: 30;
+  transform: translateY(-50%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
 /* Responsividade consolidada */
 @media (max-width: 640px) {
   .container {
@@ -189,19 +204,4 @@ video {
 }
 video {
   object-fit: cover;
-}
-
-.logo-superior-mobile {
-  max-width: 90vw !important;
-}
-
-@media (min-width: 641px) {
-  .logo-superior-mobile {
-    max-width: 600px !important;
-  }
-}
-@media (min-width: 1024px) {
-  .logo-superior-mobile {
-    max-width: 700px !important;
-  }
 }

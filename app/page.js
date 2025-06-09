@@ -258,31 +258,48 @@ const CyberSertaoApp = () => {
   };
 
   const Header = () => (
-    <div className="flex flex-col items-center pt-8 pb-4">
+    <div className="flex flex-col items-center pt-8 pb-4 relative z-30">
       <Image
         alt="logo_superior"
         src="/nome_app.png"
-        width={600}
-        height={300}
-        className="w-auto h-auto max-w-[90vw] sm:max-w-[600px] lg:max-w-[700px] logo-superior-mobile"
+        width={300}
+        height={150}
+        className="w-auto h-auto max-w-[25vw] sm:max-w-[200px] md:max-w-[225px] lg:max-w-[250px] xl:max-w-[225px] 2xl:max-w-[200px] logo-superior-consistent-bleeding"
         priority
       />
     </div>
   );
 
-  const Footer = ({ hideCopyright = false }) => (
+  const Footer = ({ hideCopyright = false, showBleedingButtons = false }) => (
     <>
-      <div className="pb-6 pt-4 flex justify-center">
-        <Image
-          alt="logo_muva"
-          src="/logo_muva.png"
-          width={200}
-          height={100}
-          className="w-auto h-auto max-w-[170px] sm:max-w-[200px] lg:max-w-[160px] xl:max-w-[140px] 2xl:max-w-[120px] 3xl:max-w-[96px]"
-        />
-      </div>
+      {showBleedingButtons && (
+        <div className="relative z-30 pb-3 pt-2 flex justify-center">
+          <Image
+            alt="logo_muva"
+            src="/logo_muva.png"
+            width={200}
+            height={100}
+            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[120px] xl:max-w-[100px] 2xl:max-w-[90px]"
+          />
+        </div>
+      )}
+      {!showBleedingButtons && (
+        <div
+          className={`flex justify-center ${
+            hideCopyright ? "pb-8 pt-4" : "pb-4 pt-4"
+          }`}
+        >
+          <Image
+            alt="logo_muva"
+            src="/logo_muva.png"
+            width={200}
+            height={100}
+            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[120px] xl:max-w-[100px] 2xl:max-w-[90px]"
+          />
+        </div>
+      )}
       {!hideCopyright && (
-        <div className="text-center text-green-400 text-xs lg:text-sm">
+        <div className="text-center text-green-400 text-xs lg:text-sm pb-3 pt-1">
           © CyberSertão 2099 - An original project by MUVA House. All rights
           reserved.
         </div>
@@ -388,21 +405,21 @@ const CyberSertaoApp = () => {
             )}
           </div>
         </div>
-        <div className="relative z-20 p-2 flex justify-center">
+        <div className="relative z-30 p-1 flex justify-center">
           <CyberButton
             onClick={() => setCurrentScreen("terms")}
-            className="text-xl lg:text-2xl"
+            className="text-xl lg:text-2xl consistent-bleeding-button"
           >
             CRIAR AVATAR
           </CyberButton>
         </div>
-        <div className="relative z-20 pb-8 pt-4 flex justify-center">
+        <div className="relative z-20 pb-6 pt-1 flex justify-center">
           <Image
             alt="logo_muva"
             src="/logo_muva.png"
             width={200}
             height={100}
-            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] lg:max-w-[160px] xl:max-w-[140px] 2xl:max-w-[120px] 3xl:max-w-[96px]"
+            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[120px] xl:max-w-[100px] 2xl:max-w-[90px]"
           />
         </div>
       </div>
@@ -412,9 +429,11 @@ const CyberSertaoApp = () => {
   const screens = {
     intro: () => <IntroScreen setCurrentScreen={setCurrentScreen} />,
     terms: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121]">
-        <Header />
-        <div className="flex-1 bg-[#7B0DFF] p-8 overflow-y-auto">
+      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
+        <div className="relative z-20">
+          <Header />
+        </div>
+        <div className="flex-1 bg-[#7B0DFF] p-8 overflow-y-auto pt-16 pb-20">
           <h2 className="text-black text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
             TERMOS DE USO — CYBER SERTÃO 2099
           </h2>
@@ -442,21 +461,23 @@ const CyberSertaoApp = () => {
             </p>
           </div>
         </div>
-        <div className="p-2 flex justify-center">
+        <div className="relative z-30 p-2 flex justify-center">
           <CyberButton
             onClick={() => setCurrentScreen("upload")}
-            className="text-xl lg:text-2xl"
+            className="text-xl lg:text-2xl consistent-bleeding-button"
           >
             ACEITAR
           </CyberButton>
         </div>
-        <Footer />
+        <Footer showBleedingButtons />
       </div>
     ),
 
     upload: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121]">
-        <Header />
+      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
+        <div className="relative z-20">
+          <Header />
+        </div>
         <div className="flex-1 bg-[#7B0DFF] flex flex-col justify-center items-center space-y-8 p-8">
           <input
             type="file"
@@ -466,22 +487,26 @@ const CyberSertaoApp = () => {
             className="hidden"
           />
           <div className="flex flex-col gap-4 w-full max-w-sm mx-auto">
-            <CyberButton
-              onClick={() => fileInputRef.current?.click()}
-              className="text-xl lg:text-2xl w-full"
-            >
-              ENVIAR FOTO
-            </CyberButton>
-            <CyberButton
-              onClick={startCamera}
-              variant="secondary"
-              className="text-xl lg:text-2xl w-full"
-            >
-              TIRAR FOTO
-            </CyberButton>
+            <div className="relative z-30">
+              <CyberButton
+                onClick={() => fileInputRef.current?.click()}
+                className="text-xl lg:text-2xl w-full consistent-bleeding-button"
+              >
+                ENVIAR FOTO
+              </CyberButton>
+            </div>
+            <div className="relative z-30">
+              <CyberButton
+                onClick={startCamera}
+                variant="secondary"
+                className="text-xl lg:text-2xl w-full consistent-bleeding-button"
+              >
+                TIRAR FOTO
+              </CyberButton>
+            </div>
           </div>
         </div>
-        <Footer />
+        <Footer showBleedingButtons />
       </div>
     ),
 
@@ -490,7 +515,7 @@ const CyberSertaoApp = () => {
         <div className="flex flex-col items-center pt-4 pb-2 relative z-10">
           <Header />
         </div>
-        <div className="flex-1 relative bg-[#0C4FE8] overflow-hidden">
+        <div className="flex-1 relative bg-[#0C4FE8] overflow-hidden -mt-16 pt-16">
           {showCamera && (
             <>
               <video
@@ -528,7 +553,7 @@ const CyberSertaoApp = () => {
           <CyberButton
             onClick={capturePhoto}
             variant="secondary"
-            className="text-lg lg:text-xl"
+            className="text-lg lg:text-xl consistent-bleeding-button"
           >
             CAPTURAR
           </CyberButton>
@@ -548,7 +573,7 @@ const CyberSertaoApp = () => {
     ),
 
     preview: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121]">
+      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
         <div className="relative z-10">
           <Header />
         </div>
@@ -556,7 +581,7 @@ const CyberSertaoApp = () => {
           {imagePreview ? (
             <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
               <img
-                src={imagePreview}
+                src={imagePreview || "/placeholder.svg"}
                 alt="Preview da imagem"
                 className="w-full h-auto max-h-[60vh] object-contain rounded-lg shadow-2xl border-2 border-[#ff00ff]"
               />
@@ -571,28 +596,33 @@ const CyberSertaoApp = () => {
         {error && (
           <div className="p-4 bg-[#FF0D0D] text-white text-center">{error}</div>
         )}
-        <div className="p-2 flex justify-center space-x-4 relative z-10">
+        <div className="relative z-30 flex justify-center space-x-4">
           <CyberButton
             onClick={processImage}
             variant="secondary"
-            className="text-xl lg:text-2xl"
+            className="text-xl lg:text-2xl consistent-bleeding-button"
             disabled={isProcessing}
           >
             {isProcessing ? "PROCESSANDO..." : "CRIAR"}
           </CyberButton>
-          <CyberButton onClick={resetApp} className="text-xl lg:text-2xl">
+          <CyberButton
+            onClick={resetApp}
+            className="text-xl lg:text-2xl consistent-bleeding-button"
+          >
             REFAZER
           </CyberButton>
         </div>
         <div className="relative z-10">
-          <Footer hideCopyright />
+          <Footer hideCopyright showBleedingButtons />
         </div>
       </div>
     ),
 
     loading: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121]">
-        <Header />
+      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
+        <div className="relative z-20">
+          <Header />
+        </div>
         <div className="flex-1 bg-[#7B0DFF] flex flex-col justify-center items-center">
           <div className="relative w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 mb-8">
             <div className="absolute inset-0 border-8 border-[#ff00ff] rounded-full animate-spin border-t-transparent"></div>
@@ -621,18 +651,20 @@ const CyberSertaoApp = () => {
             )}
           </div>
         </div>
-        <Footer hideCopyright />
+        <Footer hideCopyright showBleedingButtons />
       </div>
     ),
 
     result: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121]">
-        <Header />
+      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
+        <div className="relative z-20">
+          <Header />
+        </div>
         <div className="flex-1 bg-[#7B0DFF] flex items-center justify-center p-4">
           {processedImage && (
             <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
               <img
-                src={processedImage}
+                src={processedImage || "/placeholder.svg"}
                 alt="Imagem processada"
                 className="w-full h-auto max-h-[60vh] object-contain rounded-lg shadow-2xl border-2 border-[#15ff6f]"
               />
@@ -640,19 +672,22 @@ const CyberSertaoApp = () => {
             </div>
           )}
         </div>
-        <div className="p-8 flex justify-center space-x-4">
+        <div className="relative z-30 p-8 flex justify-center space-x-4">
           <CyberButton
             onClick={shareImage}
             variant="secondary"
-            className="text-xl lg:text-2xl"
+            className="text-xl lg:text-2xl consistent-bleeding-button"
           >
             COMPARTILHAR
           </CyberButton>
-          <CyberButton onClick={resetApp} className="text-xl lg:text-2xl">
+          <CyberButton
+            onClick={resetApp}
+            className="text-xl lg:text-2xl consistent-bleeding-button"
+          >
             NOVA FOTO
           </CyberButton>
         </div>
-        <Footer hideCopyright />
+        <Footer hideCopyright showBleedingButtons />
       </div>
     ),
   };
