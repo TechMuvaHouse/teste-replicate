@@ -93,11 +93,26 @@ body {
   transform: translateY(35%);
 }
 
+/* Efeito de vazamento específico para a tela da câmera - apenas 15% */
+.logo-superior-camera-bleeding {
+  position: relative;
+  z-index: 30;
+  transform: translateY(15%);
+}
+
 /* Efeito de vazamento consistente para botões - 50% em todos os dispositivos */
 .consistent-bleeding-button {
   position: relative;
   z-index: 30;
   transform: translateY(-50%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Efeito de vazamento específico para botões da câmera - 25% */
+.camera-bleeding-button {
+  position: relative;
+  z-index: 30;
+  transform: translateY(-25%);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 

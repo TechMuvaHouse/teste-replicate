@@ -258,7 +258,7 @@ const CyberSertaoApp = () => {
   };
 
   const Header = () => (
-    <div className="flex flex-col items-center pt-8 pb-4 relative z-30">
+    <div className="flex flex-col items-center pt-1 pb-1 relative z-30">
       <Image
         alt="logo_superior"
         src="/nome_app.png"
@@ -270,10 +270,24 @@ const CyberSertaoApp = () => {
     </div>
   );
 
+  // Header especial para a tela da câmera com vazamento correto
+  const CameraHeader = () => (
+    <div className="flex flex-col items-center pt-2 pb-2 relative z-30">
+      <Image
+        alt="logo_superior"
+        src="/nome_app.png"
+        width={300}
+        height={150}
+        className="w-auto h-auto max-w-[25vw] sm:max-w-[200px] md:max-w-[225px] lg:max-w-[250px] xl:max-w-[225px] 2xl:max-w-[200px] logo-superior-camera-bleeding"
+        priority
+      />
+    </div>
+  );
+
   const Footer = ({ hideCopyright = false, showBleedingButtons = false }) => (
     <>
       {showBleedingButtons && (
-        <div className="relative z-30 pb-3 pt-2 flex justify-center">
+        <div className="relative z-30 pb-2 pt-1 flex justify-center">
           <Image
             alt="logo_muva"
             src="/logo_muva.png"
@@ -286,7 +300,7 @@ const CyberSertaoApp = () => {
       {!showBleedingButtons && (
         <div
           className={`flex justify-center ${
-            hideCopyright ? "pb-8 pt-4" : "pb-4 pt-4"
+            hideCopyright ? "pb-4 pt-2" : "pb-4 pt-4"
           }`}
         >
           <Image
@@ -512,10 +526,10 @@ const CyberSertaoApp = () => {
 
     camera: () => (
       <div className="fixed inset-0 bg-[#212121] z-50 flex flex-col">
-        <div className="flex flex-col items-center pt-4 pb-2 relative z-10">
-          <Header />
+        <div className="flex flex-col items-center relative z-10">
+          <CameraHeader />
         </div>
-        <div className="flex-1 relative bg-[#0C4FE8] overflow-hidden -mt-16 pt-16">
+        <div className="flex-1 relative bg-[#0C4FE8] overflow-hidden">
           {showCamera && (
             <>
               <video
@@ -549,11 +563,11 @@ const CyberSertaoApp = () => {
             </>
           )}
         </div>
-        <div className="p-4 flex justify-center space-x-4 relative z-10">
+        <div className="relative z-30 p-2 flex justify-center space-x-4">
           <CyberButton
             onClick={capturePhoto}
             variant="secondary"
-            className="text-lg lg:text-xl consistent-bleeding-button"
+            className="text-lg lg:text-xl camera-bleeding-button"
           >
             CAPTURAR
           </CyberButton>
@@ -562,7 +576,7 @@ const CyberSertaoApp = () => {
               stopCamera();
               setCurrentScreen("upload");
             }}
-            className="text-lg lg:text-xl"
+            className="text-lg lg:text-xl camera-bleeding-button"
             showIcon={false}
           >
             ✕ CANCELAR
