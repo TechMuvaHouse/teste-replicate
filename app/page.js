@@ -665,56 +665,67 @@ const CyberSertaoApp = () => {
                 position: "relative",
                 maxWidth: "600px",
                 margin: "0 auto",
+                minHeight: "420px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-start",
+                alignItems: "center",
               }}
             >
-              <div style={{ position: "relative", zIndex: 3 }}>
+              <div style={{ position: "relative", zIndex: 3, width: "100%" }}>
                 {showCamera && (
                   <>
-                    <video
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      className="absolute inset-0 w-full h-full object-cover object-top z-5"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center z-10">
-                      <div className="relative">
-                        <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
-                        {[
-                          "top-left",
-                          "top-right",
-                          "bottom-left",
-                          "bottom-right",
-                        ].map((pos, i) => (
-                          <div
-                            key={i}
-                            className={`absolute w-6 h-6 lg:w-8 lg:h-8 border-4 border-[#ff00ff] ${
-                              pos === "top-left"
-                                ? "-top-2 -left-2 border-r-0 border-b-0 rounded-tl-lg"
-                                : pos === "top-right"
-                                ? "-top-2 -right-2 border-l-0 border-b-0 rounded-tr-lg"
-                                : pos === "bottom-left"
-                                ? "-bottom-2 -left-2 border-r-0 border-t-0 rounded-bl-lg"
-                                : "-bottom-2 -right-2 border-l-0 border-t-0 rounded-br-lg"
-                            }`}
-                          ></div>
-                        ))}
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        height: "320px",
+                        maxWidth: "100%",
+                        margin: "0 auto",
+                      }}
+                    >
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <div className="relative">
+                          <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
+                          {[
+                            "top-left",
+                            "top-right",
+                            "bottom-left",
+                            "bottom-right",
+                          ].map((pos, i) => (
+                            <div
+                              key={i}
+                              className={`absolute w-6 h-6 lg:w-8 lg:h-8 border-4 border-[#ff00ff] ${
+                                pos === "top-left"
+                                  ? "-top-2 -left-2 border-r-0 border-b-0 rounded-tl-lg"
+                                  : pos === "top-right"
+                                  ? "-top-2 -right-2 border-l-0 border-b-0 rounded-tr-lg"
+                                  : pos === "bottom-left"
+                                  ? "-bottom-2 -left-2 border-r-0 border-t-0 rounded-bl-lg"
+                                  : "-bottom-2 -right-2 border-l-0 border-t-0 rounded-br-lg"
+                              }`}
+                            ></div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </>
                 )}
                 <div
-                  className="button-bleeding-container"
-                  style={{
-                    position: "relative",
-                    zIndex: 4,
-                    marginTop: "320px",
-                  }}
+                  className="button-bleeding-container mt-6 flex flex-col items-center w-full"
+                  style={{ position: "relative", zIndex: 4 }}
                 >
                   <CyberButton
                     onClick={capturePhoto}
                     variant="secondary"
-                    className="text-lg lg:text-xl"
+                    className="text-lg lg:text-xl mb-4"
                   >
                     CAPTURAR
                   </CyberButton>
