@@ -670,7 +670,7 @@ const CyberSertaoApp = () => {
                 flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "center",
-                overflow: "hidden",
+                overflow: "visible",
               }}
             >
               <div
@@ -725,30 +725,45 @@ const CyberSertaoApp = () => {
                           ))}
                         </div>
                       </div>
+                      {/* Botões flutuando na base da box da câmera */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          right: 0,
+                          bottom: "-40px",
+                          zIndex: 30,
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "16px",
+                          pointerEvents: "auto",
+                        }}
+                      >
+                        <CyberButton
+                          onClick={capturePhoto}
+                          variant="secondary"
+                          className="text-lg lg:text-xl"
+                        >
+                          CAPTURAR
+                        </CyberButton>
+                        <CyberButton
+                          onClick={() => {
+                            stopCamera();
+                            setCurrentScreen("upload");
+                          }}
+                          className="text-lg lg:text-xl"
+                        >
+                          ✕ CANCELAR
+                        </CyberButton>
+                      </div>
                     </div>
                   </>
                 )}
               </div>
             </div>
           </div>
-        </div>
-        <div className="button-bleeding-container">
-          <CyberButton
-            onClick={capturePhoto}
-            variant="secondary"
-            className="text-lg lg:text-xl"
-          >
-            CAPTURAR
-          </CyberButton>
-          <CyberButton
-            onClick={() => {
-              stopCamera();
-              setCurrentScreen("upload");
-            }}
-            className="text-lg lg:text-xl"
-          >
-            ✕ CANCELAR
-          </CyberButton>
         </div>
         <Footer />
         <canvas ref={canvasRef} className="hidden" />
