@@ -219,7 +219,6 @@ const CyberSertaoApp = () => {
     setCurrentScreen("upload");
   };
 
-  // Modificar o componente CyberButton para garantir centralização vertical consistente
   const CyberButton = ({
     children,
     onClick,
@@ -280,7 +279,7 @@ const CyberSertaoApp = () => {
             background: "transparent",
             border: "none",
             backgroundColor: "transparent",
-            padding: "8px 12px", // Adicionar padding para dar mais espaço ao texto
+            padding: "8px 12px",
           }}
         >
           <div className="flex items-center justify-center w-full h-full font-bold text-xs sm:text-sm md:text-base lg:text-lg">
@@ -290,7 +289,7 @@ const CyberSertaoApp = () => {
                 background: "transparent",
                 backgroundColor: "transparent",
                 color: "#000000",
-                padding: "4px 8px", // Padding adicional no texto
+                padding: "4px 8px",
               }}
             >
               {children}
@@ -319,15 +318,17 @@ const CyberSertaoApp = () => {
     </div>
   );
 
+  // CORREÇÃO: Footer com logo MUVA corrigida
   const Footer = () => (
     <div className="footer-section">
       <div className="logo-muva-container">
         <Image
           alt="logo_muva"
           src="/logo_muva.png"
-          width={200}
-          height={100}
-          className="w-auto h-auto max-w-[50%] max-h-[60%] object-contain"
+          width={120}
+          height={60}
+          className="logo-muva-img"
+          priority
         />
         <div className="copyright-text">
           © CyberSertão 2099 - An original project by MUVA House. All rights
@@ -378,7 +379,6 @@ const CyberSertaoApp = () => {
       <div className="screen-layout intro-screen">
         <Header />
         <div className="content-section">
-          {/* Linha de corte - atrás do vídeo */}
           <img src="/linha_corte.png" alt="" className="linha-corte-img" />
 
           <div className="relative w-full max-w-2xl aspect-video z-10">
@@ -431,7 +431,6 @@ const CyberSertaoApp = () => {
               </button>
             )}
           </div>
-          {/* Botão posicionado mais próximo ao footer */}
           <div className="intro-button-bleeding">
             <CyberButton
               onClick={() => setCurrentScreen("terms")}
@@ -454,7 +453,6 @@ const CyberSertaoApp = () => {
         <Header />
         <div className="content-section">
           <div></div>
-          {/* Background roxo ocupando toda a largura */}
           <div className="terms-background"></div>
           <div className="terms-content">
             <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
@@ -485,7 +483,6 @@ const CyberSertaoApp = () => {
               </p>
             </div>
           </div>
-          {/* Botão posicionado próximo ao footer */}
           <div className="button-bleeding-container">
             <CyberButton
               onClick={() => setCurrentScreen("upload")}
@@ -503,7 +500,6 @@ const CyberSertaoApp = () => {
       <div className="screen-layout">
         <Header />
         <div className="content-section">
-          {/* Background roxo ocupando toda a largura */}
           <div className="upload-background"></div>
           <input
             type="file"
@@ -568,7 +564,6 @@ const CyberSertaoApp = () => {
               </div>
             </>
           )}
-          {/* Botões posicionados próximos ao footer */}
           <div className="button-bleeding-container">
             <CyberButton
               onClick={capturePhoto}
@@ -594,13 +589,13 @@ const CyberSertaoApp = () => {
     ),
 
     preview: () => (
-      <div className="screen-layout">
+      <div className="screen-layout preview-screen">
         <Header />
         <div className="content-section">
-          {/* Linha de corte - atrás da imagem */}
           <img src="/linha_corte.png" alt="" className="linha-corte-img" />
 
-          <div className="flex items-center justify-center h-full w-full relative z-10">
+          {/* NOVA ÁREA ESPECÍFICA PARA PREVIEW */}
+          <div className="image-preview-area">
             {imagePreview ? (
               <div className="image-container">
                 <img
@@ -616,12 +611,12 @@ const CyberSertaoApp = () => {
               </div>
             )}
           </div>
+
           {error && (
             <div className="absolute top-4 left-4 right-4 p-4 bg-[#FF0D0D] text-white text-center z-20 rounded">
               {error}
             </div>
           )}
-          {/* Botões posicionados próximos ao footer */}
           <div className="button-bleeding-container">
             <CyberButton
               onClick={processImage}
@@ -666,10 +661,11 @@ const CyberSertaoApp = () => {
     ),
 
     result: () => (
-      <div className="screen-layout">
+      <div className="screen-layout result-screen">
         <Header />
         <div className="content-section">
-          <div className="flex items-center justify-center h-full w-full relative z-10">
+          {/* USAR A MESMA ÁREA ESPECÍFICA PARA RESULTADO */}
+          <div className="image-preview-area">
             {processedImage && (
               <div className="image-container">
                 <img
@@ -680,7 +676,6 @@ const CyberSertaoApp = () => {
               </div>
             )}
           </div>
-          {/* Botões posicionados próximos ao footer */}
           <div className="button-bleeding-container">
             <CyberButton
               onClick={shareImage}

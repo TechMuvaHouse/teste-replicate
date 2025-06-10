@@ -30,20 +30,26 @@
 html,
 body {
   max-width: 100vw;
-  overflow: hidden;
+  /* CORREÇÃO: Remover overflow hidden e ajustar altura */
+  overflow-x: hidden; /* Apenas horizontal */
+  overflow-y: auto; /* Permitir scroll vertical */
   background: #212121;
   color: var(--foreground);
-  height: 100vh;
+  /* CORREÇÃO: Usar min-height ao invés de height fixo */
+  min-height: 100vh;
+  min-height: 100dvh; /* Suporte para dynamic viewport height */
   font-family: "Jaapokki", Arial, Helvetica, sans-serif !important;
 }
 
-/* Layout com proporções fixas */
+/* Layout com proporções fixas - CORRIGIDO */
 .screen-layout {
-  height: 100vh;
+  /* CORREÇÃO: Usar min-height ao invés de height fixo */
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height para mobile */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   position: relative;
+  /* CORREÇÃO: Remover overflow hidden */
 }
 
 .header-section {
@@ -55,22 +61,27 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  z-index: 50; /* Aumentado de 20 para 50 */
+  z-index: 50;
   padding: 0;
   padding-top: 0;
   margin-top: -25px;
+  /* CORREÇÃO: Garantir que não seja cortado */
+  flex-shrink: 0;
 }
 
 .content-section {
   flex: 1;
   background: #212121;
   position: relative;
-  overflow: hidden;
+  /* CORREÇÃO: Permitir overflow quando necessário */
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: -15px;
-  z-index: 10; /* Z-index menor que header e footer */
+  z-index: 10;
+  /* CORREÇÃO: Garantir altura mínima */
+  min-height: 0;
 }
 
 .footer-section {
@@ -83,10 +94,12 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  z-index: 50; /* Aumentado de 20 para 50 */
+  z-index: 50;
   padding: 0;
   padding-bottom: 0;
   padding-top: 15px;
+  /* CORREÇÃO: Garantir que não seja cortado */
+  flex-shrink: 0;
 }
 
 /* Linha de corte - elemento de fundo */
@@ -97,11 +110,11 @@ body {
   transform: translateX(-50%);
   height: 100vh;
   width: auto;
-  z-index: 5; /* Atrás do conteúdo principal mas visível */
-  pointer-events: none; /* Não interfere com interações */
+  z-index: 5;
+  pointer-events: none;
   object-fit: cover;
   object-position: center;
-  opacity: 0.8; /* Leve transparência */
+  opacity: 0.8;
 }
 
 /* Animações */
@@ -121,7 +134,6 @@ body {
   }
 }
 
-/* Nova animação customizada para o círculo pulsante */
 @keyframes pulse-custom {
   0% {
     opacity: 1;
@@ -187,7 +199,6 @@ body {
   filter: hue-rotate(0deg) saturate(1) brightness(1);
 }
 
-/* Novo loading customizado */
 .loading-container-custom {
   position: relative;
   display: flex;
@@ -227,37 +238,64 @@ body {
   filter: hue-rotate(295deg) saturate(100%) brightness(100%);
 }
 
+/* NOVA ÁREA ESPECÍFICA PARA PREVIEW DE IMAGEM - AUMENTADA AINDA MAIS */
+.image-preview-area {
+  position: relative;
+  width: 100%;
+  max-width: 1000px; /* AUMENTADO: de 800px para 1000px */
+  height: 600px; /* AUMENTADO: de 500px para 600px */
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+
+@media (max-width: 768px) {
+  .image-preview-area {
+    max-width: 98%; /* AUMENTADO: de 95% para 98% */
+    height: 550px; /* AUMENTADO: de 400px para 500px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-preview-area {
+    max-width: 1100px; /* AUMENTADO: de 900px para 1100px */
+    height: 650px; /* AUMENTADO: de 550px para 650px */
+  }
+}
+
 /* Componentes reutilizáveis */
 .image-container {
   position: relative;
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  height: 100%;
   width: 100%;
-  max-height: 90%;
-  max-width: 95%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
-  z-index: 30; /* Z-index menor que o logo mas maior que o conteúdo */
+  z-index: 30;
+  padding: 0;
 }
 
 .image-container img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain;
-  width: auto;
-  height: auto;
+  object-fit: contain !important;
+  width: auto !important;
+  height: auto !important;
+  object-position: center;
+  display: block;
 }
 
+/* CORREÇÕES PARA MOBILE */
 @media (max-width: 768px) {
-  .image-container {
-    max-width: 95%;
-    max-height: 85%;
-    min-height: 70vh;
-    z-index: 30;
+  .screen-layout {
+    /* CORREÇÃO: Garantir altura adequada em mobile */
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .loading-container-custom {
@@ -269,15 +307,15 @@ body {
     width: 60px;
     height: 60px;
   }
+
+  /* CORREÇÃO: Garantir que footer seja visível */
+  .footer-section {
+    padding-bottom: 10px; /* REDUZIDO: de 20px para 10px */
+    margin-bottom: 0;
+  }
 }
 
 @media (min-width: 1024px) {
-  .image-container {
-    max-width: 90%;
-    max-height: 85%;
-    z-index: 30;
-  }
-
   .loading-container-custom {
     width: 350px;
     height: 350px;
@@ -417,12 +455,10 @@ body {
   margin-top: -45px;
 }
 
-/* Ajustes específicos para o vídeo da tela de intro */
 .intro-screen .content-section > div:first-of-type {
   margin-bottom: 0;
 }
 
-/* Container do vídeo na tela de intro - um terço da largura */
 .intro-screen .content-section .relative {
   max-width: 33%;
   width: 33%;
@@ -430,7 +466,7 @@ body {
   max-height: 70vh;
   height: auto;
   position: relative;
-  z-index: 30; /* Z-index menor que o logo */
+  z-index: 30;
   margin: 0 auto;
   margin-top: -20px;
   padding-bottom: 0;
@@ -458,7 +494,6 @@ body {
   }
 }
 
-/* Vídeo ocupando todo o espaço do container */
 .intro-screen .content-section video {
   object-fit: cover !important;
   width: 100%;
@@ -466,13 +501,12 @@ body {
   border-radius: 8px;
 }
 
-/* Ajuste para o botão próximo da logo_muva.png */
 .intro-screen .intro-button-bleeding {
   position: absolute;
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 60; /* Z-index maior que header e footer */
+  z-index: 60;
 }
 
 .intro-screen .intro-button-bleeding .relative {
@@ -501,17 +535,23 @@ body {
   }
 }
 
-/* Vazamento do logo superior - SEMPRE NO TOPO */
+/* CORREÇÃO: Logo bleeding com tamanhos mais controlados */
 .logo-bleeding {
   position: relative;
-  z-index: 100 !important; /* Z-index máximo para sempre estar no topo */
+  z-index: 100 !important;
   transform: translateY(25%);
+  /* CORREÇÃO: Adicionar max-width e max-height fixos */
+  max-width: 280px !important;
+  max-height: 140px !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 @media (max-width: 768px) {
   .logo-bleeding {
-    max-width: 65% !important;
-    max-height: 80% !important;
+    /* CORREÇÃO: Tamanhos mais específicos para mobile */
+    max-width: 200px !important;
+    max-height: 100px !important;
     transform: translateY(45%);
     z-index: 100 !important;
   }
@@ -519,20 +559,19 @@ body {
 
 @media (min-width: 769px) {
   .logo-bleeding {
-    max-width: 60% !important;
-    max-height: 120% !important;
+    max-width: 280px !important;
+    max-height: 140px !important;
     transform: translateY(25%);
     z-index: 100 !important;
   }
 }
 
-/* NOVA ESTRUTURA DE BOTÕES - Posicionados próximos ao footer */
 .button-bleeding-container {
   position: absolute;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 60; /* Z-index maior que header e footer */
+  z-index: 60;
   display: flex;
   gap: clamp(12px, 4vw, 20px);
   align-items: center;
@@ -561,12 +600,35 @@ body {
   }
 }
 
-/* Espaçamento entre logo e copyright */
+/* CORREÇÃO: Logo MUVA com tamanhos mais controlados */
 .logo-muva-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
+}
+
+/* CORREÇÃO: Tamanhos específicos para logo MUVA - AUMENTADOS DRASTICAMENTE */
+.logo-muva-img {
+  width: auto !important;
+  height: auto !important;
+  max-width: 450px !important; /* AUMENTADO: de 350px para 450px */
+  max-height: 225px !important; /* AUMENTADO: de 175px para 225px */
+  object-fit: contain !important;
+}
+
+@media (max-width: 768px) {
+  .logo-muva-img {
+    max-width: 380px !important; /* AUMENTADO: de 280px para 380px */
+    max-height: 190px !important; /* AUMENTADO: de 140px para 190px */
+  }
+}
+
+@media (min-width: 1024px) {
+  .logo-muva-img {
+    max-width: 500px !important; /* AUMENTADO: de 400px para 500px */
+    max-height: 250px !important; /* AUMENTADO: de 200px para 250px */
+  }
 }
 
 input[type="file"] {
@@ -584,25 +646,31 @@ video {
   object-fit: cover;
 }
 
-/* Copyright sempre visível */
+/* CORREÇÃO: Copyright com espaçamento reduzido no mobile */
 .copyright-text {
   color: #15ff6f;
   font-size: clamp(10px, 2vw, 14px);
   text-align: center;
   margin: 0;
-  padding: 0;
+  padding: 8px 16px;
+  line-height: 1.4;
 }
 
-/* Botão da tela de intro - posicionado mais para baixo */
+@media (max-width: 768px) {
+  .copyright-text {
+    padding: 4px 20px; /* REDUZIDO: de 12px para 4px no topo/baixo */
+    margin-bottom: 5px; /* REDUZIDO: de 10px para 5px */
+  }
+}
+
 .intro-button-bleeding {
   position: absolute;
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 60; /* Z-index maior que header e footer */
+  z-index: 60;
 }
 
-/* Background roxo da tela de termos - ocupando toda a largura */
 .terms-background {
   position: absolute;
   top: 0;
@@ -620,7 +688,7 @@ video {
   z-index: 10;
   padding: 8px;
   overflow-y: auto;
-  max-height: 65vh; /* Reduzido de 70vh para 65vh */
+  max-height: 65vh;
   width: 100%;
   max-width: 60vw;
   margin: 0 auto;
@@ -630,12 +698,11 @@ video {
 @media (max-width: 768px) {
   .terms-content {
     max-width: 90vw;
-    max-height: 60vh; /* Reduzido de 65vh para 60vh */
+    max-height: 60vh;
     padding: 6px;
   }
 }
 
-/* Background roxo da tela de upload - ocupando toda a largura */
 .upload-background {
   position: absolute;
   top: 0;
@@ -657,15 +724,20 @@ video {
   z-index: 10;
 }
 
-/* Ajustes específicos para tela de preview de imagem */
 .preview-screen .image-container,
 .preview-screen .image-preview {
   z-index: 30 !important;
-  max-height: 90% !important;
-  max-width: 95% !important;
-  min-height: 75vh !important;
-  background: transparent !important; /* Removido o fundo transparente */
-  backdrop-filter: none !important; /* Removido o efeito de blur */
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.preview-screen .image-container img,
+.result-screen .image-container img {
+  object-fit: contain !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
 }
 
 .audio-toggle-button {
@@ -699,11 +771,10 @@ video {
   display: block;
 }
 
-/* Flecha diagonal no header - ajustada para posições específicas em desktop e mobile */
 .diagonal-arrow-header {
   position: absolute;
   bottom: -5px;
-  left: clamp(320px, 60vw, 600px); /* Movido mais para direita no desktop */
+  left: clamp(320px, 60vw, 600px);
   width: clamp(35px, 8vw, 50px);
   height: clamp(35px, 8vw, 50px);
   z-index: 25;
@@ -711,14 +782,13 @@ video {
 
 @media (max-width: 768px) {
   .diagonal-arrow-header {
-    left: 20px; /* Bem à esquerda no mobile */
+    left: 20px;
     bottom: -5px;
     width: 40px;
     height: 40px;
   }
 }
 
-/* Centralização vertical do texto nos botões em dispositivos móveis */
 @media (max-width: 768px) {
   .relative .flex.items-center.justify-center {
     height: 100% !important;
@@ -734,5 +804,19 @@ video {
     height: 100% !important;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+  }
+}
+
+/* CORREÇÃO ADICIONAL: Garantir scroll suave em mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 }
