@@ -725,46 +725,30 @@ const CyberSertaoApp = () => {
                           ))}
                         </div>
                       </div>
-                      {/* Botões sobrepostos ao vídeo */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          zIndex: 20,
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "16px",
-                          padding: "8px 0 4px 0",
-                          pointerEvents: "auto",
-                        }}
-                      >
-                        <CyberButton
-                          onClick={capturePhoto}
-                          variant="secondary"
-                          className="text-lg lg:text-xl"
-                        >
-                          CAPTURAR
-                        </CyberButton>
-                        <CyberButton
-                          onClick={() => {
-                            stopCamera();
-                            setCurrentScreen("upload");
-                          }}
-                          className="text-lg lg:text-xl"
-                        >
-                          ✕ CANCELAR
-                        </CyberButton>
-                      </div>
                     </div>
                   </>
                 )}
               </div>
             </div>
           </div>
+        </div>
+        <div className="button-bleeding-container">
+          <CyberButton
+            onClick={capturePhoto}
+            variant="secondary"
+            className="text-lg lg:text-xl"
+          >
+            CAPTURAR
+          </CyberButton>
+          <CyberButton
+            onClick={() => {
+              stopCamera();
+              setCurrentScreen("upload");
+            }}
+            className="text-lg lg:text-xl"
+          >
+            ✕ CANCELAR
+          </CyberButton>
         </div>
         <Footer />
         <canvas ref={canvasRef} className="hidden" />
