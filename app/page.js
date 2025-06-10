@@ -661,7 +661,7 @@ const CyberSertaoApp = () => {
                 border: "2px solid #ff00ff",
                 background: "#212121",
                 borderRadius: "16px",
-                padding: "1.5rem 1.5rem",
+                padding: "0",
                 position: "relative",
                 maxWidth: "600px",
                 margin: "0 auto",
@@ -670,16 +670,24 @@ const CyberSertaoApp = () => {
                 flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "center",
+                overflow: "hidden",
               }}
             >
-              <div style={{ position: "relative", zIndex: 3, width: "100%" }}>
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 3,
+                  width: "100%",
+                  height: "400px",
+                }}
+              >
                 {showCamera && (
                   <>
                     <div
                       style={{
                         position: "relative",
                         width: "100%",
-                        height: "320px",
+                        height: "400px",
                         maxWidth: "100%",
                         margin: "0 auto",
                       }}
@@ -690,8 +698,9 @@ const CyberSertaoApp = () => {
                         playsInline
                         muted
                         className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg"
+                        style={{ background: "#000" }}
                       />
-                      <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div className="relative">
                           <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
                           {[
@@ -711,34 +720,47 @@ const CyberSertaoApp = () => {
                                   ? "-bottom-2 -left-2 border-r-0 border-t-0 rounded-bl-lg"
                                   : "-bottom-2 -right-2 border-l-0 border-t-0 rounded-br-lg"
                               }`}
+                              style={{ pointerEvents: "none" }}
                             ></div>
                           ))}
                         </div>
                       </div>
+                      {/* Botões sobrepostos ao vídeo */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          zIndex: 20,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "12px",
+                          padding: "16px",
+                          pointerEvents: "auto",
+                        }}
+                      >
+                        <CyberButton
+                          onClick={capturePhoto}
+                          variant="secondary"
+                          className="text-lg lg:text-xl mb-2"
+                        >
+                          CAPTURAR
+                        </CyberButton>
+                        <CyberButton
+                          onClick={() => {
+                            stopCamera();
+                            setCurrentScreen("upload");
+                          }}
+                          className="text-lg lg:text-xl"
+                        >
+                          ✕ CANCELAR
+                        </CyberButton>
+                      </div>
                     </div>
                   </>
                 )}
-                <div
-                  className="button-bleeding-container mt-6 flex flex-col items-center w-full"
-                  style={{ position: "relative", zIndex: 4 }}
-                >
-                  <CyberButton
-                    onClick={capturePhoto}
-                    variant="secondary"
-                    className="text-lg lg:text-xl mb-4"
-                  >
-                    CAPTURAR
-                  </CyberButton>
-                  <CyberButton
-                    onClick={() => {
-                      stopCamera();
-                      setCurrentScreen("upload");
-                    }}
-                    className="text-lg lg:text-xl"
-                  >
-                    ✕ CANCELAR
-                  </CyberButton>
-                </div>
               </div>
             </div>
           </div>
