@@ -285,7 +285,7 @@ const CyberSertaoApp = () => {
                 const newWindow = window.open(processedImage, "_blank");
                 if (newWindow) {
                   alert(
-                    "Para salvar a imagem:\n\n• Android: Toque e segure na imagem, depois selecione 'Salvar imagem'\n• iOS: Toque e segure na imagem, depois selecione 'Salvar na Galeria de Fotos'"
+                    "Para salvar a imagem:\n\n• Android: Toque e segure na imagem, depois selecione 'Salvar imagem'\n• iOS: Toque e segure na Galeria de Fotos'"
                   );
                 } else {
                   alert(
@@ -553,15 +553,15 @@ const CyberSertaoApp = () => {
 
           <div className="image-preview-area">
             <div className="image-container terms-container">
-              <div className="terms-content">
+              <div className="terms-content text-center">
                 <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
                   TERMOS DE USO — CYBER SERTÃO 2099
                 </h2>
-                <div className="text-white space-y-4">
+                <div className="text-white space-y-4 text-center">
                   <p className="text-lg lg:text-xl">
                     Ao usar este aplicativo, você concorda que:
                   </p>
-                  <ul className="space-y-2 text-base lg:text-lg text-white">
+                  <ul className="space-y-2 text-base lg:text-lg text-white list-none p-0 m-0 text-center">
                     <li>• Suas imagens serão processadas por IA.</li>
                     <li>• Nada será armazenado após o uso.</li>
                     <li>
@@ -577,7 +577,7 @@ const CyberSertaoApp = () => {
                       ou resultado.
                     </li>
                   </ul>
-                  <p className="text-white text-sm lg:text-base mt-4 opacity-80">
+                  <p className="text-white text-sm lg:text-base mt-4 opacity-80 text-center">
                     Esta é uma versão BETA. Sujeita a falhas e mudanças.
                   </p>
                 </div>
@@ -602,28 +602,46 @@ const CyberSertaoApp = () => {
       <div className="screen-layout">
         <Header />
         <div className="content-section">
-          <div className="upload-background"></div>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            ref={fileInputRef}
-            className="hidden"
-          />
-          <div className="relative z-10 flex flex-col gap-6 w-full max-w-sm mx-auto items-center justify-center h-full">
-            <CyberButton
-              onClick={() => fileInputRef.current?.click()}
-              className="text-xl lg:text-2xl"
+          <img src="/linha_corte.png" alt="" className="linha-corte-img" />
+          <div className="image-preview-area">
+            <div
+              className="image-container terms-container"
+              style={{
+                boxShadow: "0 0 16px #ff00ff",
+                border: "2px solid #ff00ff",
+                background: "#212121",
+                borderRadius: "16px",
+                padding: "1.5rem 1.5rem",
+                position: "relative",
+                maxWidth: "600px",
+                margin: "0 auto",
+              }}
             >
-              ENVIAR FOTO
-            </CyberButton>
-            <CyberButton
-              onClick={startCamera}
-              variant="secondary"
-              className="text-xl lg:text-2xl"
-            >
-              TIRAR FOTO
-            </CyberButton>
+              <div style={{ position: "relative", zIndex: 3 }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  ref={fileInputRef}
+                  className="hidden"
+                />
+                <div className="relative z-10 flex flex-col gap-6 w-full max-w-sm mx-auto items-center justify-center h-full">
+                  <CyberButton
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-xl lg:text-2xl"
+                  >
+                    ENVIAR FOTO
+                  </CyberButton>
+                  <CyberButton
+                    onClick={startCamera}
+                    variant="secondary"
+                    className="text-xl lg:text-2xl"
+                  >
+                    TIRAR FOTO
+                  </CyberButton>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <Footer />
@@ -634,55 +652,84 @@ const CyberSertaoApp = () => {
       <div className="screen-layout">
         <Header />
         <div className="content-section">
-          {showCamera && (
-            <>
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="absolute inset-0 w-full h-full object-cover z-5"
-              />
-              <div className="absolute inset-0 flex items-center justify-center z-10">
-                <div className="relative">
-                  <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
-                  {["top-left", "top-right", "bottom-left", "bottom-right"].map(
-                    (pos, i) => (
-                      <div
-                        key={i}
-                        className={`absolute w-6 h-6 lg:w-8 lg:h-8 border-4 border-[#ff00ff] ${
-                          pos === "top-left"
-                            ? "-top-2 -left-2 border-r-0 border-b-0 rounded-tl-lg"
-                            : pos === "top-right"
-                            ? "-top-2 -right-2 border-l-0 border-b-0 rounded-tr-lg"
-                            : pos === "bottom-left"
-                            ? "-bottom-2 -left-2 border-r-0 border-t-0 rounded-bl-lg"
-                            : "-bottom-2 -right-2 border-l-0 border-t-0 rounded-br-lg"
-                        }`}
-                      ></div>
-                    )
-                  )}
+          <img src="/linha_corte.png" alt="" className="linha-corte-img" />
+          <div className="image-preview-area">
+            <div
+              className="image-container terms-container"
+              style={{
+                boxShadow: "0 0 16px #ff00ff",
+                border: "2px solid #ff00ff",
+                background: "#212121",
+                borderRadius: "16px",
+                padding: "1.5rem 1.5rem",
+                position: "relative",
+                maxWidth: "600px",
+                margin: "0 auto",
+              }}
+            >
+              <div style={{ position: "relative", zIndex: 3 }}>
+                {showCamera && (
+                  <>
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="absolute inset-0 w-full h-full object-cover object-top z-5"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                      <div className="relative">
+                        <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
+                        {[
+                          "top-left",
+                          "top-right",
+                          "bottom-left",
+                          "bottom-right",
+                        ].map((pos, i) => (
+                          <div
+                            key={i}
+                            className={`absolute w-6 h-6 lg:w-8 lg:h-8 border-4 border-[#ff00ff] ${
+                              pos === "top-left"
+                                ? "-top-2 -left-2 border-r-0 border-b-0 rounded-tl-lg"
+                                : pos === "top-right"
+                                ? "-top-2 -right-2 border-l-0 border-b-0 rounded-tr-lg"
+                                : pos === "bottom-left"
+                                ? "-bottom-2 -left-2 border-r-0 border-t-0 rounded-bl-lg"
+                                : "-bottom-2 -right-2 border-l-0 border-t-0 rounded-br-lg"
+                            }`}
+                          ></div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+                <div
+                  className="button-bleeding-container"
+                  style={{
+                    position: "relative",
+                    zIndex: 4,
+                    marginTop: "320px",
+                  }}
+                >
+                  <CyberButton
+                    onClick={capturePhoto}
+                    variant="secondary"
+                    className="text-lg lg:text-xl"
+                  >
+                    CAPTURAR
+                  </CyberButton>
+                  <CyberButton
+                    onClick={() => {
+                      stopCamera();
+                      setCurrentScreen("upload");
+                    }}
+                    className="text-lg lg:text-xl"
+                  >
+                    ✕ CANCELAR
+                  </CyberButton>
                 </div>
               </div>
-            </>
-          )}
-          <div className="button-bleeding-container">
-            <CyberButton
-              onClick={capturePhoto}
-              variant="secondary"
-              className="text-lg lg:text-xl"
-            >
-              CAPTURAR
-            </CyberButton>
-            <CyberButton
-              onClick={() => {
-                stopCamera();
-                setCurrentScreen("upload");
-              }}
-              className="text-lg lg:text-xl"
-            >
-              ✕ CANCELAR
-            </CyberButton>
+            </div>
           </div>
         </div>
         <Footer />
