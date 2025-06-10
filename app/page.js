@@ -738,7 +738,7 @@ const CyberSertaoApp = () => {
                           alignItems: "center",
                           justifyContent: "center",
                           gap: "16px",
-                          padding: "16px",
+                          padding: "8px 0 4px 0",
                           pointerEvents: "auto",
                         }}
                       >
