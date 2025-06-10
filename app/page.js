@@ -734,9 +734,10 @@ const CyberSertaoApp = () => {
                           bottom: 0,
                           zIndex: 20,
                           display: "flex",
-                          flexDirection: "column",
+                          flexDirection: "row",
                           alignItems: "center",
-                          gap: "12px",
+                          justifyContent: "center",
+                          gap: "16px",
                           padding: "16px",
                           pointerEvents: "auto",
                         }}
@@ -744,7 +745,7 @@ const CyberSertaoApp = () => {
                         <CyberButton
                           onClick={capturePhoto}
                           variant="secondary"
-                          className="text-lg lg:text-xl mb-2"
+                          className="text-lg lg:text-xl"
                         >
                           CAPTURAR
                         </CyberButton>
