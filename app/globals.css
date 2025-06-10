@@ -811,7 +811,7 @@ video {
 .diagonal-arrow-header {
   position: absolute;
   bottom: -5px;
-  left: clamp(320px, 60vw, 600px);
+  left: 35%; /* ALTERADO: posição fixa do lado esquerdo do centro */
   width: clamp(35px, 8vw, 50px);
   height: clamp(35px, 8vw, 50px);
   z-index: 25;
@@ -819,10 +819,22 @@ video {
 
 @media (max-width: 768px) {
   .diagonal-arrow-header {
-    left: 20px;
+    left: 20px; /* Manter posição fixa no mobile */
     bottom: -5px;
     width: 40px;
     height: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .diagonal-arrow-header {
+    left: 30%; /* ADICIONADO: posição mais específica para desktop */
+  }
+}
+
+@media (min-width: 1440px) {
+  .diagonal-arrow-header {
+    left: 35%; /* ADICIONADO: posição para telas grandes */
   }
 }
 
