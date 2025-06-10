@@ -24,7 +24,6 @@ export async function POST(request) {
         input: {
           image: image, // URL da imagem
           // Adicione outros parâmetros necessários para seu modelo
-
           seed: Math.floor(Math.random() * 1000000),
         },
       }

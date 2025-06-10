@@ -2,20 +2,9 @@
 
 @font-face {
   font-family: "Jaapokki";
-  src: url("/fonts/Jaapokki-Regular.woff2") format("woff2"),
-    url("/fonts/Jaapokki-Regular.woff") format("woff"),
-    url("/fonts/Jaapokki-Regular.ttf") format("truetype");
+  src: url("/fonts/jaapokki-regular.woff") format("woff"),
+    url("/fonts/jaapokki-regular.ttf") format("truetype");
   font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Jaapokki";
-  src: url("/fonts/Jaapokki-Bold.woff2") format("woff2"),
-    url("/fonts/Jaapokki-Bold.woff") format("woff"),
-    url("/fonts/Jaapokki-Bold.ttf") format("truetype");
-  font-weight: bold;
   font-style: normal;
   font-display: swap;
 }
@@ -35,15 +24,84 @@
 
 * {
   box-sizing: border-box;
-  font-family: var(--font-jaapokki) !important;
+  font-family: "Jaapokki", Arial, Helvetica, sans-serif !important;
 }
 
 html,
 body {
   max-width: 100vw;
-  overflow-x: hidden;
-  background: var(--background);
+  overflow: hidden;
+  background: #212121;
   color: var(--foreground);
+  height: 100vh;
+  font-family: "Jaapokki", Arial, Helvetica, sans-serif !important;
+}
+
+/* Layout com proporções fixas */
+.screen-layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+.header-section {
+  height: auto;
+  min-height: auto;
+  max-height: none;
+  background: #212121;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 50; /* Aumentado de 20 para 50 */
+  padding: 0;
+  padding-top: 0;
+  margin-top: -25px;
+}
+
+.content-section {
+  flex: 1;
+  background: #212121;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -15px;
+  z-index: 10; /* Z-index menor que header e footer */
+}
+
+.footer-section {
+  height: auto;
+  min-height: auto;
+  max-height: none;
+  background: #212121;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 50; /* Aumentado de 20 para 50 */
+  padding: 0;
+  padding-bottom: 0;
+  padding-top: 15px;
+}
+
+/* Linha de corte - elemento de fundo */
+.linha-corte-img {
+  position: absolute;
+  top: 0;
+  left: 47%;
+  transform: translateX(-50%);
+  height: 100vh;
+  width: auto;
+  z-index: 5; /* Atrás do conteúdo principal mas visível */
+  pointer-events: none; /* Não interfere com interações */
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.8; /* Leve transparência */
 }
 
 /* Animações */
@@ -53,8 +111,120 @@ body {
   }
 }
 
+@keyframes pulse-loading {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+/* Nova animação customizada para o círculo pulsante */
+@keyframes pulse-custom {
+  0% {
+    opacity: 1;
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    opacity: 0;
+    filter: brightness(0) saturate(0);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1) saturate(1);
+  }
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+.animate-pulse-loading {
+  animation: pulse-loading 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-custom {
+  animation: pulse-custom 1.5s ease-in-out infinite;
+}
+
+/* Loading personalizado com box_loading.png e circulo_loading.png */
+.loading-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.loading-box {
+  width: 100%;
+  height: 100%;
+  background-image: url("/box_loading.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-circle {
+  width: 60px;
+  height: 60px;
+  background-image: url("/circulo_loading.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: hue-rotate(0deg) saturate(1) brightness(1);
+}
+
+/* Novo loading customizado */
+.loading-container-custom {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+  z-index: 20;
+}
+
+.loading-box-custom {
+  width: 100%;
+  height: 100%;
+  background-image: url("/box_loading.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-circle-custom {
+  width: 80px;
+  height: 80px;
+  background-image: url("/circulo_loading.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  filter: hue-rotate(295deg) saturate(100%) brightness(100%);
 }
 
 /* Componentes reutilizáveis */
@@ -63,11 +233,60 @@ body {
   overflow: hidden;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  height: 100%;
+  width: 100%;
+  max-height: 90%;
+  max-width: 95%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  z-index: 30; /* Z-index menor que o logo mas maior que o conteúdo */
 }
 
-.image-container:hover {
-  transform: scale(1.02);
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  width: auto;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .image-container {
+    max-width: 95%;
+    max-height: 85%;
+    min-height: 70vh;
+    z-index: 30;
+  }
+
+  .loading-container-custom {
+    width: 250px;
+    height: 250px;
+  }
+
+  .loading-circle-custom {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-container {
+    max-width: 90%;
+    max-height: 85%;
+    z-index: 30;
+  }
+
+  .loading-container-custom {
+    width: 350px;
+    height: 350px;
+  }
+
+  .loading-circle-custom {
+    width: 100px;
+    height: 100px;
+  }
 }
 
 .btn-primary {
@@ -86,36 +305,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Efeito de vazamento consistente para logo superior - 35% em todos os dispositivos */
-.logo-superior-consistent-bleeding {
-  position: relative;
-  z-index: 30;
-  transform: translateY(35%);
-}
-
-/* Efeito de vazamento específico para a tela da câmera - apenas 15% */
-.logo-superior-camera-bleeding {
-  position: relative;
-  z-index: 30;
-  transform: translateY(15%);
-}
-
-/* Efeito de vazamento consistente para botões - 50% em todos os dispositivos */
-.consistent-bleeding-button {
-  position: relative;
-  z-index: 30;
-  transform: translateY(-50%);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Efeito de vazamento específico para botões da câmera - 25% */
-.camera-bleeding-button {
-  position: relative;
-  z-index: 30;
-  transform: translateY(-25%);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
 /* Responsividade consolidada */
 @media (max-width: 640px) {
   .container {
@@ -124,6 +313,8 @@ body {
   .image-preview {
     max-width: 100%;
     height: auto;
+    position: relative;
+    z-index: 30;
   }
   .face-guide-oval {
     width: 160px;
@@ -141,6 +332,14 @@ body {
     font-size: 0.875rem;
     padding: 0.75rem 1rem;
   }
+  .loading-container {
+    width: 150px;
+    height: 150px;
+  }
+  .loading-circle {
+    width: 45px;
+    height: 45px;
+  }
 }
 
 @media (min-width: 641px) and (max-width: 768px) {
@@ -148,8 +347,10 @@ body {
     padding: 1rem;
   }
   .image-preview {
-    max-width: 80%;
+    max-width: 95%;
     height: auto;
+    position: relative;
+    z-index: 30;
   }
   .face-guide-oval {
     width: 180px;
@@ -206,6 +407,168 @@ body {
 .no-scroll {
   overflow: hidden;
 }
+
+/* Classe específica para a tela de intro */
+.intro-screen .header-section {
+  margin-top: -35px;
+}
+
+.intro-screen .content-section {
+  margin-top: -45px;
+}
+
+/* Ajustes específicos para o vídeo da tela de intro */
+.intro-screen .content-section > div:first-of-type {
+  margin-bottom: 0;
+}
+
+/* Container do vídeo na tela de intro - um terço da largura */
+.intro-screen .content-section .relative {
+  max-width: 33%;
+  width: 33%;
+  aspect-ratio: 9 / 16;
+  max-height: 70vh;
+  height: auto;
+  position: relative;
+  z-index: 30; /* Z-index menor que o logo */
+  margin: 0 auto;
+  margin-top: -20px;
+  padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .intro-screen .content-section .relative {
+    max-width: 100%;
+    width: 100%;
+    max-height: 75vh;
+    margin-top: 10px;
+    padding-bottom: 0;
+    z-index: 30;
+  }
+}
+
+@media (min-width: 1024px) {
+  .intro-screen .content-section .relative {
+    max-width: 30%;
+    width: 30%;
+    max-height: 75vh;
+    margin-top: -25px;
+    padding-bottom: 0;
+    z-index: 30;
+  }
+}
+
+/* Vídeo ocupando todo o espaço do container */
+.intro-screen .content-section video {
+  object-fit: cover !important;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+}
+
+/* Ajuste para o botão próximo da logo_muva.png */
+.intro-screen .intro-button-bleeding {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60; /* Z-index maior que header e footer */
+}
+
+.intro-screen .intro-button-bleeding .relative {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .intro-screen .intro-button-bleeding {
+    bottom: 20px;
+  }
+
+  .intro-screen .intro-button-bleeding .relative {
+    height: clamp(35px, 8vw, 45px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .intro-screen .intro-button-bleeding {
+    bottom: 20px;
+  }
+
+  .intro-screen .intro-button-bleeding .relative {
+    height: clamp(60px, 12vw, 80px);
+  }
+}
+
+/* Vazamento do logo superior - SEMPRE NO TOPO */
+.logo-bleeding {
+  position: relative;
+  z-index: 100 !important; /* Z-index máximo para sempre estar no topo */
+  transform: translateY(25%);
+}
+
+@media (max-width: 768px) {
+  .logo-bleeding {
+    max-width: 65% !important;
+    max-height: 80% !important;
+    transform: translateY(45%);
+    z-index: 100 !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .logo-bleeding {
+    max-width: 60% !important;
+    max-height: 120% !important;
+    transform: translateY(25%);
+    z-index: 100 !important;
+  }
+}
+
+/* NOVA ESTRUTURA DE BOTÕES - Posicionados próximos ao footer */
+.button-bleeding-container {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60; /* Z-index maior que header e footer */
+  display: flex;
+  gap: clamp(12px, 4vw, 20px);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: calc(100% - 40px);
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .button-bleeding-container {
+    max-width: calc(100% - 30px);
+    padding: 0 15px;
+    gap: clamp(8px, 3vw, 15px);
+    bottom: 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .button-bleeding-container {
+    max-width: calc(100% - 80px);
+    padding: 0 40px;
+    gap: clamp(20px, 5vw, 30px);
+    bottom: 15px;
+  }
+}
+
+/* Espaçamento entre logo e copyright */
+.logo-muva-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
 input[type="file"] {
   transition: all 0.2s ease-in-out;
 }
@@ -219,4 +582,157 @@ video {
 }
 video {
   object-fit: cover;
+}
+
+/* Copyright sempre visível */
+.copyright-text {
+  color: #15ff6f;
+  font-size: clamp(10px, 2vw, 14px);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* Botão da tela de intro - posicionado mais para baixo */
+.intro-button-bleeding {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60; /* Z-index maior que header e footer */
+}
+
+/* Background roxo da tela de termos - ocupando toda a largura */
+.terms-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #7b0dff;
+  z-index: 5;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+.terms-content {
+  position: relative;
+  z-index: 10;
+  padding: 8px;
+  overflow-y: auto;
+  max-height: 65vh; /* Reduzido de 70vh para 65vh */
+  width: 100%;
+  max-width: 60vw;
+  margin: 0 auto;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .terms-content {
+    max-width: 90vw;
+    max-height: 60vh; /* Reduzido de 65vh para 60vh */
+    padding: 6px;
+  }
+}
+
+/* Background roxo da tela de upload - ocupando toda a largura */
+.upload-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #7b0dff;
+  z-index: 5;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+.full-width-content {
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Ajustes específicos para tela de preview de imagem */
+.preview-screen .image-container,
+.preview-screen .image-preview {
+  z-index: 30 !important;
+  max-height: 90% !important;
+  max-width: 95% !important;
+  min-height: 75vh !important;
+  background: transparent !important; /* Removido o fundo transparente */
+  backdrop-filter: none !important; /* Removido o efeito de blur */
+}
+
+.audio-toggle-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+  background: rgba(33, 33, 33, 0.8);
+  border: 2px solid #ff00ff;
+  color: white;
+  padding: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.audio-toggle-button:hover {
+  background: rgba(33, 33, 33, 0.9);
+  transform: scale(1.05);
+}
+
+.audio-toggle-button.active {
+  border-color: #15ff6f;
+  color: #15ff6f;
+}
+
+.audio-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Flecha diagonal no header - ajustada para posições específicas em desktop e mobile */
+.diagonal-arrow-header {
+  position: absolute;
+  bottom: -5px;
+  left: clamp(320px, 60vw, 600px); /* Movido mais para direita no desktop */
+  width: clamp(35px, 8vw, 50px);
+  height: clamp(35px, 8vw, 50px);
+  z-index: 25;
+}
+
+@media (max-width: 768px) {
+  .diagonal-arrow-header {
+    left: 20px; /* Bem à esquerda no mobile */
+    bottom: -5px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Centralização vertical do texto nos botões em dispositivos móveis */
+@media (max-width: 768px) {
+  .relative .flex.items-center.justify-center {
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .relative .flex.items-center.justify-center span {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
 }

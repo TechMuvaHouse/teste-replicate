@@ -35,22 +35,19 @@ export default function RootLayout({ children }) {
         {/* Preload da fonte Jaapokki para melhor performance */}
         <link
           rel="preload"
-          href="/fonts/Jaapokki-Regular.woff2"
+          href="/fonts/jaapokki-regular.woff"
           as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/Jaapokki-Bold.woff2"
-          as="font"
-          type="font/woff2"
+          type="font/woff"
           crossOrigin="anonymous"
         />
       </head>
       <body
-        className="antialiased min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100"
-        style={{ fontFamily: "Jaapokki, Arial, Helvetica, sans-serif" }}
+        className="antialiased min-h-screen"
+        style={{
+          fontFamily: "Jaapokki, Arial, Helvetica, sans-serif",
+          background: "#212121",
+          overflow: "hidden",
+        }}
       >
         <main className="min-h-screen">{children}</main>
       </body>

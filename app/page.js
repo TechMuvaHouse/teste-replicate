@@ -169,21 +169,23 @@ const CyberSertaoApp = () => {
   const shareImage = async () => {
     if (navigator.share && processedImage) {
       try {
-        const response = await fetch(processedImage);
-        const blob = await response.blob();
-        const file = new File([blob], "cyber-avatar.jpg", {
-          type: "image/jpeg",
-        });
         await navigator.share({
           title: "Meu Avatar Cyber Sertão 2099",
           text: "Confira meu avatar criado no Cyber Sertão 2099!",
-          files: [file],
+          url: processedImage,
         });
       } catch (error) {
-        downloadImage();
+        console.log("Compartilhamento cancelado ou não suportado");
       }
     } else {
-      downloadImage();
+      if (navigator.clipboard && processedImage) {
+        try {
+          await navigator.clipboard.writeText(processedImage);
+          alert("Link da imagem copiado para a área de transferência!");
+        } catch (error) {
+          alert("Não foi possível compartilhar a imagem");
+        }
+      }
     }
   };
 
@@ -217,111 +219,124 @@ const CyberSertaoApp = () => {
     setCurrentScreen("upload");
   };
 
+  // Modificar o componente CyberButton para garantir centralização vertical consistente
   const CyberButton = ({
     children,
     onClick,
     className = "",
     variant = "primary",
-    showIcon = true,
+    disabled = false,
   }) => {
-    const baseClasses =
-      "relative overflow-hidden font-bold py-0 px-3 rounded-none transition-all duration-300 transform hover:scale-105 inline-block";
-    const variantClasses =
+    const [isHovered, setIsHovered] = useState(false);
+
+    const buttonConfig =
       variant === "primary"
-        ? "bg-[#ff00ff] text-[#15ff6f] hover:bg-[#15ff6f] hover:text-[#ff00ff]"
-        : "bg-[#15ff6f] text-[#ff00ff] hover:bg-[#ff00ff] hover:text-[#15ff6f]";
+        ? {
+            defaultImg: "/botao_vazado_rosa.svg",
+            hoverImg: "/botao_vazado_verde.svg",
+          }
+        : {
+            defaultImg: "/botao_vazado_verde.svg",
+            hoverImg: "/botao_vazado_rosa.svg",
+          };
+
+    const currentImg = isHovered
+      ? buttonConfig.hoverImg
+      : buttonConfig.defaultImg;
 
     return (
-      <button
-        onClick={onClick}
-        className={`${baseClasses} ${variantClasses} ${className}`}
+      <div
+        className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 ${className} ${
+          disabled ? "opacity-50 cursor-not-allowed" : ""
+        }`}
+        onClick={disabled ? undefined : onClick}
+        onMouseEnter={() => !disabled && setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          width: "clamp(160px, 45vw, 220px)",
+          height: "clamp(45px, 10vw, 60px)",
+          maxWidth: "50vw",
+          minWidth: "160px",
+        }}
       >
-        <span className="relative z-10 flex items-center justify-start gap-0.5 text-base md:text-lg lg:text-xl xl:text-2xl pl-1 whitespace-nowrap break-words w-full justify-center">
-          {showIcon && (
-            <Image
-              src="/chevron-down.svg"
-              alt="chevron"
-              width={32}
-              height={32}
-              className="w-8 h-8 md:w-14 md:h-16 lg:w-16 lg:h-18 flex-shrink-0"
+        <img
+          src={currentImg || "/placeholder.svg"}
+          alt=""
+          className="w-full h-full object-contain select-none pointer-events-none"
+          style={{
+            transition: "opacity 0.3s ease",
+            display: "block",
+            backgroundColor: "transparent",
+            mixBlendMode: "normal",
+          }}
+          draggable={false}
+        />
+
+        <div
+          className="absolute inset-0 flex items-center justify-center w-full h-full"
+          style={{
+            color: "#000000",
+            transition: "none",
+            background: "transparent",
+            border: "none",
+            backgroundColor: "transparent",
+            padding: "8px 12px", // Adicionar padding para dar mais espaço ao texto
+          }}
+        >
+          <div className="flex items-center justify-center w-full h-full font-bold text-xs sm:text-sm md:text-base lg:text-lg">
+            <span
+              className="tracking-wider whitespace-nowrap select-none flex items-center justify-center h-full"
               style={{
-                filter: "brightness(0) saturate(100%) invert(100%)",
+                background: "transparent",
+                backgroundColor: "transparent",
+                color: "#000000",
+                padding: "4px 8px", // Padding adicional no texto
               }}
-            />
-          )}
-          <span className="flex-1 tracking-wider text-ellipsis overflow-hidden">
-            {children}
-          </span>
-        </span>
-      </button>
+            >
+              {children}
+            </span>
+          </div>
+        </div>
+      </div>
     );
   };
 
   const Header = () => (
-    <div className="flex flex-col items-center pt-1 pb-1 relative z-30">
+    <div className="header-section">
+      <img
+        src="/flecha_diagonal.png"
+        alt=""
+        className="diagonal-arrow-header"
+      />
       <Image
         alt="logo_superior"
         src="/nome_app.png"
         width={300}
         height={150}
-        className="w-auto h-auto max-w-[25vw] sm:max-w-[200px] md:max-w-[225px] lg:max-w-[250px] xl:max-w-[225px] 2xl:max-w-[200px] logo-superior-consistent-bleeding"
+        className="w-auto h-auto logo-bleeding"
         priority
       />
     </div>
   );
 
-  // Header especial para a tela da câmera com vazamento correto
-  const CameraHeader = () => (
-    <div className="flex flex-col items-center pt-2 pb-2 relative z-30">
-      <Image
-        alt="logo_superior"
-        src="/nome_app.png"
-        width={300}
-        height={150}
-        className="w-auto h-auto max-w-[25vw] sm:max-w-[200px] md:max-w-[225px] lg:max-w-[250px] xl:max-w-[225px] 2xl:max-w-[200px] logo-superior-camera-bleeding"
-        priority
-      />
-    </div>
-  );
-
-  const Footer = ({ hideCopyright = false, showBleedingButtons = false }) => (
-    <>
-      {showBleedingButtons && (
-        <div className="relative z-30 pb-2 pt-1 flex justify-center">
-          <Image
-            alt="logo_muva"
-            src="/logo_muva.png"
-            width={200}
-            height={100}
-            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[120px] xl:max-w-[100px] 2xl:max-w-[90px]"
-          />
-        </div>
-      )}
-      {!showBleedingButtons && (
-        <div
-          className={`flex justify-center ${
-            hideCopyright ? "pb-4 pt-2" : "pb-4 pt-4"
-          }`}
-        >
-          <Image
-            alt="logo_muva"
-            src="/logo_muva.png"
-            width={200}
-            height={100}
-            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[120px] xl:max-w-[100px] 2xl:max-w-[90px]"
-          />
-        </div>
-      )}
-      {!hideCopyright && (
-        <div className="text-center text-green-400 text-xs lg:text-sm pb-3 pt-1">
+  const Footer = () => (
+    <div className="footer-section">
+      <div className="logo-muva-container">
+        <Image
+          alt="logo_muva"
+          src="/logo_muva.png"
+          width={200}
+          height={100}
+          className="w-auto h-auto max-w-[50%] max-h-[60%] object-contain"
+        />
+        <div className="copyright-text">
           © CyberSertão 2099 - An original project by MUVA House. All rights
           reserved.
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 
-  // Novo componente para a tela de introdução
   const IntroScreen = ({ setCurrentScreen }) => {
     const [isAudioEnabled, setIsAudioEnabled] = useState(false);
     const [videoReady, setVideoReady] = useState(false);
@@ -330,14 +345,12 @@ const CyberSertaoApp = () => {
     React.useEffect(() => {
       if (videoRef.current) {
         videoRef.current.muted = true;
-        // Força o vídeo a tentar dar play ao carregar (corrige autoplay bloqueado após reload)
         const playPromise = videoRef.current.play();
         if (playPromise !== undefined) {
-          playPromise.catch(() => {}); // Silencia erros de autoplay
+          playPromise.catch(() => {});
         }
       }
-      setIsAudioEnabled(false); // Garante que o estado do botão seja resetado
-      // Remover o reset de setVideoReady(false) para não esconder o botão após reload
+      setIsAudioEnabled(false);
     }, []);
 
     const toggleAudio = async () => {
@@ -362,30 +375,30 @@ const CyberSertaoApp = () => {
     };
 
     return (
-      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
-        <div className="relative z-20">
-          <Header />
-        </div>
-        <div className="flex-1 relative bg-gradient-to-b from-green-400 to-green-600 flex items-center justify-center overflow-hidden">
-          <div className="relative w-full max-w-2xl aspect-video">
+      <div className="screen-layout intro-screen">
+        <Header />
+        <div className="content-section">
+          {/* Linha de corte - atrás do vídeo */}
+          <img src="/linha_corte.png" alt="" className="linha-corte-img" />
+
+          <div className="relative w-full max-w-2xl aspect-video z-10">
             <video
               ref={videoRef}
               autoPlay
               loop
               playsInline
               onLoadedData={handleVideoReady}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-lg"
             >
               <source src="/video_loop.mp4" type="video/mp4" />
               <div className="absolute inset-0 text-4xl md:text-6xl lg:text-8xl text-[#212121] font-bold opacity-50 flex items-center justify-center">
                 VIDEO
               </div>
             </video>
-            {/* Botão de áudio apenas com o ícone */}
             {videoReady && (
               <button
                 onClick={toggleAudio}
-                className={`absolute top-4 right-4 z-20 bg-[#212121] bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 transition-all border-2 border-[#ff00ff] ${
+                className={`absolute top-12 right-4 z-20 bg-[#212121] bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 transition-all border-2 border-[#ff00ff] ${
                   isAudioEnabled ? "border-[#15ff6f] text-[#15ff6f]" : ""
                 }`}
                 title={isAudioEnabled ? "Desativar áudio" : "Ativar áudio"}
@@ -398,7 +411,7 @@ const CyberSertaoApp = () => {
                   >
                     <path
                       fillRule="evenodd"
-                      d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.816L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.816a1 1 0 011.617.816zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828 1 1 0 010-1.415z"
+                      d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.816L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.816a1 1 0 011.617.816zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071a1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243a1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828a1 1 0 010-1.415z"
                       clipRule="evenodd"
                     />
                   </svg>
@@ -418,81 +431,80 @@ const CyberSertaoApp = () => {
               </button>
             )}
           </div>
+          {/* Botão posicionado mais próximo ao footer */}
+          <div className="intro-button-bleeding">
+            <CyberButton
+              onClick={() => setCurrentScreen("terms")}
+              className="text-xl lg:text-2xl"
+            >
+              CRIAR AVATAR
+            </CyberButton>
+          </div>
         </div>
-        <div className="relative z-30 p-1 flex justify-center">
-          <CyberButton
-            onClick={() => setCurrentScreen("terms")}
-            className="text-xl lg:text-2xl consistent-bleeding-button"
-          >
-            CRIAR AVATAR
-          </CyberButton>
-        </div>
-        <div className="relative z-20 pb-6 pt-1 flex justify-center">
-          <Image
-            alt="logo_muva"
-            src="/logo_muva.png"
-            width={200}
-            height={100}
-            className="w-auto h-auto max-w-[170px] sm:max-w-[200px] md:max-w-[140px] lg:max-w-[120px] xl:max-w-[100px] 2xl:max-w-[90px]"
-          />
-        </div>
+        <Footer />
       </div>
     );
   };
 
   const screens = {
     intro: () => <IntroScreen setCurrentScreen={setCurrentScreen} />,
+
     terms: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
-        <div className="relative z-20">
-          <Header />
-        </div>
-        <div className="flex-1 bg-[#7B0DFF] p-8 overflow-y-auto pt-16 pb-20">
-          <h2 className="text-black text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
-            TERMOS DE USO — CYBER SERTÃO 2099
-          </h2>
-          <div className="bg-[#7B0DFF] text-black space-y-4 max-w-4xl mx-auto">
-            <p className="text-lg lg:text-xl">
-              Ao usar este aplicativo, você concorda que:
-            </p>
-            <ul className="space-y-2 text-base lg:text-lg text-black bg-[#7B0DFF]">
-              <li>• Suas imagens serão processadas por IA.</li>
-              <li>• Nada será armazenado após o uso.</li>
-              <li>
-                • O conteúdo enviado deve ser de sua autoria ou ter autorização.
-              </li>
-              <li>
-                • É proibido qualquer uso ofensivo, ilegal ou que viole
-                direitos.
-              </li>
-              <li>
-                • O serviço é experimental, sem garantias de funcionamento ou
-                resultado.
-              </li>
-            </ul>
-            <p className="text-black text-sm lg:text-base mt-4 opacity-80 bg-[#7B0DFF]">
-              Esta é uma versão BETA. Sujeita a falhas e mudanças.
-            </p>
+      <div className="screen-layout">
+        <Header />
+        <div className="content-section">
+          <div></div>
+          {/* Background roxo ocupando toda a largura */}
+          <div className="terms-background"></div>
+          <div className="terms-content">
+            <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
+              TERMOS DE USO — CYBER SERTÃO 2099
+            </h2>
+            <div className="text-white space-y-4">
+              <p className="text-lg lg:text-xl">
+                Ao usar este aplicativo, você concorda que:
+              </p>
+              <ul className="space-y-2 text-base lg:text-lg text-white">
+                <li>• Suas imagens serão processadas por IA.</li>
+                <li>• Nada será armazenado após o uso.</li>
+                <li>
+                  • O conteúdo enviado deve ser de sua autoria ou ter
+                  autorização.
+                </li>
+                <li>
+                  • É proibido qualquer uso ofensivo, ilegal ou que viole
+                  direitos.
+                </li>
+                <li>
+                  • O serviço é experimental, sem garantias de funcionamento ou
+                  resultado.
+                </li>
+              </ul>
+              <p className="text-white text-sm lg:text-base mt-4 opacity-80">
+                Esta é uma versão BETA. Sujeita a falhas e mudanças.
+              </p>
+            </div>
+          </div>
+          {/* Botão posicionado próximo ao footer */}
+          <div className="button-bleeding-container">
+            <CyberButton
+              onClick={() => setCurrentScreen("upload")}
+              className="text-xl lg:text-2xl"
+            >
+              ACEITAR
+            </CyberButton>
           </div>
         </div>
-        <div className="relative z-30 p-2 flex justify-center">
-          <CyberButton
-            onClick={() => setCurrentScreen("upload")}
-            className="text-xl lg:text-2xl consistent-bleeding-button"
-          >
-            ACEITAR
-          </CyberButton>
-        </div>
-        <Footer showBleedingButtons />
+        <Footer />
       </div>
     ),
 
     upload: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
-        <div className="relative z-20">
-          <Header />
-        </div>
-        <div className="flex-1 bg-[#7B0DFF] flex flex-col justify-center items-center space-y-8 p-8">
+      <div className="screen-layout">
+        <Header />
+        <div className="content-section">
+          {/* Background roxo ocupando toda a largura */}
+          <div className="upload-background"></div>
           <input
             type="file"
             accept="image/*"
@@ -500,36 +512,30 @@ const CyberSertaoApp = () => {
             ref={fileInputRef}
             className="hidden"
           />
-          <div className="flex flex-col gap-4 w-full max-w-sm mx-auto">
-            <div className="relative z-30">
-              <CyberButton
-                onClick={() => fileInputRef.current?.click()}
-                className="text-xl lg:text-2xl w-full consistent-bleeding-button"
-              >
-                ENVIAR FOTO
-              </CyberButton>
-            </div>
-            <div className="relative z-30">
-              <CyberButton
-                onClick={startCamera}
-                variant="secondary"
-                className="text-xl lg:text-2xl w-full consistent-bleeding-button"
-              >
-                TIRAR FOTO
-              </CyberButton>
-            </div>
+          <div className="relative z-10 flex flex-col gap-6 w-full max-w-sm mx-auto items-center justify-center h-full">
+            <CyberButton
+              onClick={() => fileInputRef.current?.click()}
+              className="text-xl lg:text-2xl"
+            >
+              ENVIAR FOTO
+            </CyberButton>
+            <CyberButton
+              onClick={startCamera}
+              variant="secondary"
+              className="text-xl lg:text-2xl"
+            >
+              TIRAR FOTO
+            </CyberButton>
           </div>
         </div>
-        <Footer showBleedingButtons />
+        <Footer />
       </div>
     ),
 
     camera: () => (
-      <div className="fixed inset-0 bg-[#212121] z-50 flex flex-col">
-        <div className="flex flex-col items-center relative z-10">
-          <CameraHeader />
-        </div>
-        <div className="flex-1 relative bg-[#0C4FE8] overflow-hidden">
+      <div className="screen-layout">
+        <Header />
+        <div className="content-section">
           {showCamera && (
             <>
               <video
@@ -537,9 +543,9 @@ const CyberSertaoApp = () => {
                 autoPlay
                 playsInline
                 muted
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover z-5"
               />
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center z-10">
                 <div className="relative">
                   <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
                   {["top-left", "top-right", "bottom-left", "bottom-right"].map(
@@ -562,146 +568,133 @@ const CyberSertaoApp = () => {
               </div>
             </>
           )}
+          {/* Botões posicionados próximos ao footer */}
+          <div className="button-bleeding-container">
+            <CyberButton
+              onClick={capturePhoto}
+              variant="secondary"
+              className="text-lg lg:text-xl"
+            >
+              CAPTURAR
+            </CyberButton>
+            <CyberButton
+              onClick={() => {
+                stopCamera();
+                setCurrentScreen("upload");
+              }}
+              className="text-lg lg:text-xl"
+            >
+              ✕ CANCELAR
+            </CyberButton>
+          </div>
         </div>
-        <div className="relative z-30 p-2 flex justify-center space-x-4">
-          <CyberButton
-            onClick={capturePhoto}
-            variant="secondary"
-            className="text-lg lg:text-xl camera-bleeding-button"
-          >
-            CAPTURAR
-          </CyberButton>
-          <CyberButton
-            onClick={() => {
-              stopCamera();
-              setCurrentScreen("upload");
-            }}
-            className="text-lg lg:text-xl camera-bleeding-button"
-            showIcon={false}
-          >
-            ✕ CANCELAR
-          </CyberButton>
-        </div>
+        <Footer />
         <canvas ref={canvasRef} className="hidden" />
       </div>
     ),
 
     preview: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
-        <div className="relative z-10">
-          <Header />
-        </div>
-        <div className="flex-1 bg-[#7B0DFF] flex items-center justify-center p-4">
-          {imagePreview ? (
-            <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
-              <img
-                src={imagePreview || "/placeholder.svg"}
-                alt="Preview da imagem"
-                className="w-full h-auto max-h-[60vh] object-contain rounded-lg shadow-2xl border-2 border-[#ff00ff]"
-              />
-            </div>
-          ) : (
-            <div className="text-white text-center p-4">
-              <div className="text-xl mb-2">Erro ao carregar imagem</div>
-              <div className="text-sm opacity-75">Tente novamente</div>
+      <div className="screen-layout">
+        <Header />
+        <div className="content-section">
+          {/* Linha de corte - atrás da imagem */}
+          <img src="/linha_corte.png" alt="" className="linha-corte-img" />
+
+          <div className="flex items-center justify-center h-full w-full relative z-10">
+            {imagePreview ? (
+              <div className="image-container">
+                <img
+                  src={imagePreview || "/placeholder.svg"}
+                  alt="Preview da imagem"
+                  className="rounded-lg shadow-2xl border-2 border-[#ff00ff]"
+                />
+              </div>
+            ) : (
+              <div className="text-white text-center p-4">
+                <div className="text-xl mb-2">Erro ao carregar imagem</div>
+                <div className="text-sm opacity-75">Tente novamente</div>
+              </div>
+            )}
+          </div>
+          {error && (
+            <div className="absolute top-4 left-4 right-4 p-4 bg-[#FF0D0D] text-white text-center z-20 rounded">
+              {error}
             </div>
           )}
+          {/* Botões posicionados próximos ao footer */}
+          <div className="button-bleeding-container">
+            <CyberButton
+              onClick={processImage}
+              variant="secondary"
+              className="text-lg lg:text-xl"
+              disabled={isProcessing}
+            >
+              {isProcessing ? "PROCESSANDO..." : "CRIAR"}
+            </CyberButton>
+            <CyberButton onClick={resetApp} className="text-lg lg:text-xl">
+              REFAZER
+            </CyberButton>
+          </div>
         </div>
-        {error && (
-          <div className="p-4 bg-[#FF0D0D] text-white text-center">{error}</div>
-        )}
-        <div className="relative z-30 flex justify-center space-x-4">
-          <CyberButton
-            onClick={processImage}
-            variant="secondary"
-            className="text-xl lg:text-2xl consistent-bleeding-button"
-            disabled={isProcessing}
-          >
-            {isProcessing ? "PROCESSANDO..." : "CRIAR"}
-          </CyberButton>
-          <CyberButton
-            onClick={resetApp}
-            className="text-xl lg:text-2xl consistent-bleeding-button"
-          >
-            REFAZER
-          </CyberButton>
-        </div>
-        <div className="relative z-10">
-          <Footer hideCopyright showBleedingButtons />
-        </div>
+        <Footer />
       </div>
     ),
 
     loading: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
-        <div className="relative z-20">
-          <Header />
-        </div>
-        <div className="flex-1 bg-[#7B0DFF] flex flex-col justify-center items-center">
-          <div className="relative w-32 h-32 md:w-48 md:h-48 lg:w-64 lg:h-64 mb-8">
-            <div className="absolute inset-0 border-8 border-[#ff00ff] rounded-full animate-spin border-t-transparent"></div>
-            <div
-              className="absolute inset-4 border-4 border-purple-300 rounded-full animate-spin border-b-transparent"
-              style={{
-                animationDirection: "reverse",
-                animationDuration: "0.8s",
-              }}
-            ></div>
-            <div className="absolute inset-8 w-16 h-16 md:w-24 md:h-24 lg:w-32 lg:h-32 bg-[#ff00ff] rounded-full flex items-center justify-center">
-              <div className="w-4 h-4 md:w-6 md:h-6 lg:w-8 lg:h-8 bg-[#7B0DFF] rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <div className="text-center">
-            <div className="text-[#15ff6f] text-lg md:text-xl lg:text-2xl font-bold mb-2">
-              FASE BETA / LOADING AI THINKING
-            </div>
-            <div className="text-[#15ff6f] text-base md:text-lg lg:text-xl">
-              Tempo médio 1-2 minutos.
-            </div>
-            {error && (
-              <div className="text-red-400 text-base md:text-lg lg:text-xl mt-4">
-                {error}
+      <div className="screen-layout">
+        <Header />
+        <div className="content-section">
+          <div className="flex items-center justify-center h-full w-full relative z-10">
+            <div className="loading-container-custom">
+              <div className="loading-box-custom">
+                <div className="loading-circle-custom animate-pulse-custom"></div>
               </div>
-            )}
+              <div
+                className="text-center mt-8 space-y-2"
+                style={{ color: "#15FF6F" }}
+              >
+                <div className="text-xl font-bold">HAL 9000 / Thinking...</div>
+                <div className="text-base opacity-80">
+                  O tempo médio é de 1 a 5 minutos para gerar a imagem final.
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <Footer hideCopyright showBleedingButtons />
+        <Footer />
       </div>
     ),
 
     result: () => (
-      <div className="min-h-screen flex flex-col bg-[#212121] relative overflow-hidden">
-        <div className="relative z-20">
-          <Header />
+      <div className="screen-layout">
+        <Header />
+        <div className="content-section">
+          <div className="flex items-center justify-center h-full w-full relative z-10">
+            {processedImage && (
+              <div className="image-container">
+                <img
+                  src={processedImage || "/placeholder.svg"}
+                  alt="Imagem processada"
+                  className="rounded-lg shadow-2xl border-2 border-[#15ff6f]"
+                />
+              </div>
+            )}
+          </div>
+          {/* Botões posicionados próximos ao footer */}
+          <div className="button-bleeding-container">
+            <CyberButton
+              onClick={shareImage}
+              variant="secondary"
+              className="text-lg lg:text-xl"
+            >
+              COMPARTILHAR
+            </CyberButton>
+            <CyberButton onClick={downloadImage} className="text-lg lg:text-xl">
+              DOWNLOAD
+            </CyberButton>
+          </div>
         </div>
-        <div className="flex-1 bg-[#7B0DFF] flex items-center justify-center p-4">
-          {processedImage && (
-            <div className="relative max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl w-full">
-              <img
-                src={processedImage || "/placeholder.svg"}
-                alt="Imagem processada"
-                className="w-full h-auto max-h-[60vh] object-contain rounded-lg shadow-2xl border-2 border-[#15ff6f]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff00ff] to-transparent opacity-20 animate-pulse rounded-lg"></div>
-            </div>
-          )}
-        </div>
-        <div className="relative z-30 p-8 flex justify-center space-x-4">
-          <CyberButton
-            onClick={shareImage}
-            variant="secondary"
-            className="text-xl lg:text-2xl consistent-bleeding-button"
-          >
-            COMPARTILHAR
-          </CyberButton>
-          <CyberButton
-            onClick={resetApp}
-            className="text-xl lg:text-2xl consistent-bleeding-button"
-          >
-            NOVA FOTO
-          </CyberButton>
-        </div>
-        <Footer hideCopyright showBleedingButtons />
+        <Footer />
       </div>
     ),
   };
