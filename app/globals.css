@@ -685,59 +685,57 @@ video {
   z-index: 60;
 }
 
-.terms-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #7b0dff;
-  z-index: 5;
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
+/* Adicionar estilos para a nova tela de termos */
+
+.terms-container {
+  border: 2px solid #ff00ff !important;
+  background-color: #212121 !important;
+  border-radius: 8px;
+  overflow: auto;
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
 }
 
 .terms-content {
   position: relative;
   z-index: 10;
-  padding: 12px; /* AUMENTADO: de 8px para 12px */
+  padding: 20px;
   overflow-y: auto;
-  max-height: 55vh; /* REDUZIDO: de 65vh para 55vh */
+  max-height: 100%;
   width: 100%;
-  max-width: 60vw;
-  margin: 0 auto;
   color: white;
-  margin-top: 20px; /* ADICIONADO: margem superior */
+  background-color: #212121;
 }
 
 @media (max-width: 768px) {
   .terms-content {
-    max-width: 90vw;
-    max-height: 50vh; /* REDUZIDO: de 60vh para 50vh */
-    padding: 16px; /* AUMENTADO: de 6px para 16px */
-    margin-top: 30px; /* ADICIONADO: mais margem superior no mobile */
+    padding: 16px;
   }
 
   .terms-content h2 {
-    font-size: 1.5rem !important; /* REDUZIDO: tamanho do título */
-    margin-bottom: 1rem !important; /* REDUZIDO: margem inferior */
-    line-height: 1.3 !important; /* MELHOR: espaçamento de linha */
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem !important;
+    line-height: 1.3 !important;
   }
 
   .terms-content p {
-    font-size: 0.9rem !important; /* REDUZIDO: tamanho do texto */
-    margin-bottom: 0.75rem !important; /* REDUZIDO: margem */
+    font-size: 0.9rem !important;
+    margin-bottom: 0.75rem !important;
   }
 
   .terms-content ul {
-    margin-bottom: 0.75rem !important; /* REDUZIDO: margem */
+    margin-bottom: 0.75rem !important;
   }
 
   .terms-content li {
-    font-size: 0.85rem !important; /* REDUZIDO: tamanho dos itens */
-    margin-bottom: 0.25rem !important; /* REDUZIDO: espaçamento entre itens */
-    line-height: 1.4 !important; /* MELHOR: espaçamento de linha */
+    font-size: 0.85rem !important;
+    margin-bottom: 0.25rem !important;
+    line-height: 1.4 !important;
   }
+}
+
+/* Remover o estilo antigo da tela de termos que não é mais necessário */
+.terms-background {
+  display: none;
 }
 
 .upload-background {

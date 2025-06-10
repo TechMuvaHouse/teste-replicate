@@ -167,24 +167,74 @@ const CyberSertaoApp = () => {
   };
 
   const shareImage = async () => {
-    if (navigator.share && processedImage) {
+    if (processedImage) {
       try {
-        await navigator.share({
-          title: "Meu Avatar Cyber Sertão 2099",
-          text: "Confira meu avatar criado no Cyber Sertão 2099!",
-          url: processedImage,
+        // Primeiro, vamos baixar a imagem como blob
+        const response = await fetch(processedImage, {
+          mode: "cors",
+          credentials: "omit",
         });
-      } catch (error) {
-        console.log("Compartilhamento cancelado ou não suportado");
-      }
-    } else {
-      if (navigator.clipboard && processedImage) {
-        try {
-          await navigator.clipboard.writeText(processedImage);
-          alert("Link da imagem copiado para a área de transferência!");
-        } catch (error) {
-          alert("Não foi possível compartilhar a imagem");
+        const blob = await response.blob();
+
+        // Criar um arquivo a partir do blob
+        const file = new File([blob], `cyber-avatar-2099-${Date.now()}.jpg`, {
+          type: blob.type || "image/jpeg",
+        });
+
+        const shareText = "Confira meu avatar criado no Cyber Sertão 2099!";
+
+        // Verificar se o navegador suporta compartilhamento de arquivos
+        if (
+          navigator.share &&
+          navigator.canShare &&
+          navigator.canShare({ files: [file] })
+        ) {
+          try {
+            await navigator.share({
+              text: shareText,
+              files: [file],
+            });
+            return;
+          } catch (shareError) {
+            console.log(
+              "Compartilhamento de arquivo falhou, tentando URL:",
+              shareError
+            );
+          }
         }
+
+        // Fallback 1: Compartilhar URL se arquivos não funcionarem
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              text: shareText,
+              url: processedImage,
+            });
+            return;
+          } catch (shareError) {
+            console.log("Compartilhamento de URL falhou:", shareError);
+          }
+        }
+
+        // Fallback 2: Copiar texto e link para clipboard
+        if (navigator.clipboard) {
+          try {
+            const textToShare = `${shareText}\n\n${processedImage}`;
+            await navigator.clipboard.writeText(textToShare);
+            alert(
+              "Texto e link da imagem copiados para a área de transferência!"
+            );
+            return;
+          } catch (clipboardError) {
+            console.log("Clipboard falhou:", clipboardError);
+          }
+        }
+
+        // Fallback 3: Abrir imagem em nova aba
+        window.open(processedImage, "_blank");
+      } catch (error) {
+        console.error("Erro ao compartilhar:", error);
+        alert("Não foi possível compartilhar a imagem. Tente novamente.");
       }
     }
   };
@@ -192,18 +242,119 @@ const CyberSertaoApp = () => {
   const downloadImage = async () => {
     if (processedImage) {
       try {
-        const response = await fetch(processedImage);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `cyber-avatar-2099-${Date.now()}.jpg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+        // Detectar se é mobile
+        const isMobile =
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+          );
+
+        if (isMobile) {
+          // Estratégia para mobile: abrir em nova aba com download sugerido
+          try {
+            const response = await fetch(processedImage, {
+              mode: "cors",
+              credentials: "omit",
+            });
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            // Tentar download direto primeiro
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `cyber-avatar-2099-${Date.now()}.jpg`;
+            a.style.display = "none";
+            document.body.appendChild(a);
+
+            // Adicionar evento para limpar após o download
+            a.addEventListener("click", () => {
+              setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+              }, 100);
+            });
+
+            a.click();
+
+            // Se não funcionar, mostrar instrução para o usuário
+            setTimeout(() => {
+              if (document.body.contains(a)) {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                // Abrir em nova aba como fallback
+                const newWindow = window.open(processedImage, "_blank");
+                if (newWindow) {
+                  alert(
+                    "Para salvar a imagem:\n\n• Android: Toque e segure na imagem, depois selecione 'Salvar imagem'\n• iOS: Toque e segure na imagem, depois selecione 'Salvar na Galeria de Fotos'"
+                  );
+                } else {
+                  alert(
+                    "Não foi possível abrir a imagem. Verifique se o bloqueador de pop-ups está desabilitado."
+                  );
+                }
+              }
+            }, 1000);
+          } catch (fetchError) {
+            console.error("Erro no fetch mobile:", fetchError);
+            // Fallback: abrir em nova aba
+            const newWindow = window.open(processedImage, "_blank");
+            if (newWindow) {
+              alert(
+                "Para salvar a imagem:\n\n• Android: Toque e segure na imagem, depois selecione 'Salvar imagem'\n• iOS: Toque e segure na Galeria de Fotos'"
+              );
+            } else {
+              alert(
+                "Não foi possível abrir a imagem. Verifique se o bloqueador de pop-ups está desabilitado."
+              );
+            }
+          }
+        } else {
+          // Estratégia para desktop (mantém a original com melhorias)
+          const response = await fetch(processedImage, {
+            mode: "cors",
+            credentials: "omit",
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `cyber-avatar-2099-${Date.now()}.jpg`;
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+
+          // Limpar após um pequeno delay
+          setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 100);
+        }
       } catch (error) {
+        console.error("Erro ao fazer download:", error);
         setError("Erro ao fazer download da imagem");
+
+        // Fallback final: abrir em nova aba
+        try {
+          const newWindow = window.open(processedImage, "_blank");
+          if (newWindow) {
+            alert(
+              "Não foi possível fazer download automático. A imagem foi aberta em nova aba - clique com botão direito e selecione 'Salvar imagem como'"
+            );
+          } else {
+            alert(
+              "Não foi possível abrir a imagem. Verifique se o bloqueador de pop-ups está desabilitado."
+            );
+          }
+        } catch (fallbackError) {
+          alert(
+            "Erro ao abrir imagem. Tente novamente ou verifique sua conexão."
+          );
+        }
       }
     }
   };
@@ -279,17 +430,17 @@ const CyberSertaoApp = () => {
             background: "transparent",
             border: "none",
             backgroundColor: "transparent",
-            padding: "8px 12px",
           }}
         >
           <div className="flex items-center justify-center w-full h-full font-bold text-xs sm:text-sm md:text-base lg:text-lg">
             <span
-              className="tracking-wider whitespace-nowrap select-none flex items-center justify-center h-full"
+              className="tracking-wider whitespace-nowrap select-none text-center"
               style={{
                 background: "transparent",
                 backgroundColor: "transparent",
                 color: "#000000",
-                padding: "4px 8px",
+                width: "100%",
+                textAlign: "center",
               }}
             >
               {children}
@@ -339,7 +490,6 @@ const CyberSertaoApp = () => {
   );
 
   const IntroScreen = ({ setCurrentScreen }) => {
-    const [isAudioEnabled, setIsAudioEnabled] = useState(false);
     const [videoReady, setVideoReady] = useState(false);
     const videoRef = useRef(null);
 
@@ -351,25 +501,7 @@ const CyberSertaoApp = () => {
           playPromise.catch(() => {});
         }
       }
-      setIsAudioEnabled(false);
     }, []);
-
-    const toggleAudio = async () => {
-      if (videoRef.current) {
-        try {
-          if (!isAudioEnabled) {
-            videoRef.current.muted = false;
-            await videoRef.current.play();
-            setIsAudioEnabled(true);
-          } else {
-            videoRef.current.muted = true;
-            setIsAudioEnabled(false);
-          }
-        } catch (error) {
-          console.error("Erro ao controlar áudio:", error);
-        }
-      }
-    };
 
     const handleVideoReady = () => {
       setVideoReady(true);
@@ -381,55 +513,20 @@ const CyberSertaoApp = () => {
         <div className="content-section">
           <img src="/linha_corte.png" alt="" className="linha-corte-img" />
 
-          <div className="relative w-full max-w-2xl aspect-video z-10">
+          <div className="relative w-full max-w-2xl aspect-[16/10] md:aspect-[16/12] lg:aspect-[16/14] xl:aspect-[16/16] z-10">
             <video
               ref={videoRef}
               autoPlay
               loop
               playsInline
               onLoadedData={handleVideoReady}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover object-top rounded-lg"
             >
               <source src="/video_loop.mp4" type="video/mp4" />
               <div className="absolute inset-0 text-4xl md:text-6xl lg:text-8xl text-[#212121] font-bold opacity-50 flex items-center justify-center">
                 VIDEO
               </div>
             </video>
-            {videoReady && (
-              <button
-                onClick={toggleAudio}
-                className={`absolute top-12 right-4 z-20 bg-[#212121] bg-opacity-70 text-white p-3 rounded-full hover:bg-opacity-90 transition-all border-2 border-[#ff00ff] ${
-                  isAudioEnabled ? "border-[#15ff6f] text-[#15ff6f]" : ""
-                }`}
-                title={isAudioEnabled ? "Desativar áudio" : "Ativar áudio"}
-              >
-                {isAudioEnabled ? (
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.816L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.816a1 1 0 011.617.816zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071a1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.983 5.983 0 01-1.757 4.243a1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.984 3.984 0 00-1.172-2.828a1 1 0 010-1.415z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    className="w-6 h-6"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.816L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.816a1 1 0 011.617.816zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                )}
-              </button>
-            )}
           </div>
           <div className="intro-button-bleeding">
             <CyberButton
@@ -452,37 +549,42 @@ const CyberSertaoApp = () => {
       <div className="screen-layout">
         <Header />
         <div className="content-section">
-          <div></div>
-          <div className="terms-background"></div>
-          <div className="terms-content">
-            <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
-              TERMOS DE USO — CYBER SERTÃO 2099
-            </h2>
-            <div className="text-white space-y-4">
-              <p className="text-lg lg:text-xl">
-                Ao usar este aplicativo, você concorda que:
-              </p>
-              <ul className="space-y-2 text-base lg:text-lg text-white">
-                <li>• Suas imagens serão processadas por IA.</li>
-                <li>• Nada será armazenado após o uso.</li>
-                <li>
-                  • O conteúdo enviado deve ser de sua autoria ou ter
-                  autorização.
-                </li>
-                <li>
-                  • É proibido qualquer uso ofensivo, ilegal ou que viole
-                  direitos.
-                </li>
-                <li>
-                  • O serviço é experimental, sem garantias de funcionamento ou
-                  resultado.
-                </li>
-              </ul>
-              <p className="text-white text-sm lg:text-base mt-4 opacity-80">
-                Esta é uma versão BETA. Sujeita a falhas e mudanças.
-              </p>
+          <img src="/linha_corte.png" alt="" className="linha-corte-img" />
+
+          <div className="image-preview-area">
+            <div className="image-container terms-container">
+              <div className="terms-content">
+                <h2 className="text-white text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-center">
+                  TERMOS DE USO — CYBER SERTÃO 2099
+                </h2>
+                <div className="text-white space-y-4">
+                  <p className="text-lg lg:text-xl">
+                    Ao usar este aplicativo, você concorda que:
+                  </p>
+                  <ul className="space-y-2 text-base lg:text-lg text-white">
+                    <li>• Suas imagens serão processadas por IA.</li>
+                    <li>• Nada será armazenado após o uso.</li>
+                    <li>
+                      • O conteúdo enviado deve ser de sua autoria ou ter
+                      autorização.
+                    </li>
+                    <li>
+                      • É proibido qualquer uso ofensivo, ilegal ou que viole
+                      direitos.
+                    </li>
+                    <li>
+                      • O serviço é experimental, sem garantias de funcionamento
+                      ou resultado.
+                    </li>
+                  </ul>
+                  <p className="text-white text-sm lg:text-base mt-4 opacity-80">
+                    Esta é uma versão BETA. Sujeita a falhas e mudanças.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+
           <div className="button-bleeding-container">
             <CyberButton
               onClick={() => setCurrentScreen("upload")}
@@ -649,8 +751,9 @@ const CyberSertaoApp = () => {
                 style={{ color: "#15FF6F" }}
               >
                 <div className="text-xl font-bold">HAL 9000 / Thinking...</div>
+                <div className="text-base">BETA Test</div>
                 <div className="text-base opacity-80">
-                  O tempo médio é de 1 a 5 minutos para gerar a imagem final.
+                  Tempo médio : 1 a 5 minutos
                 </div>
               </div>
             </div>
