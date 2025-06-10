@@ -731,7 +731,7 @@ const CyberSertaoApp = () => {
                           position: "absolute",
                           left: 0,
                           right: 0,
-                          bottom: "-40px",
+                          bottom: "-80px",
                           zIndex: 30,
                           display: "flex",
                           flexDirection: "row",
