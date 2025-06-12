@@ -709,7 +709,7 @@ const CyberSertaoApp = () => {
                         marginTop:
                           typeof window !== "undefined" &&
                           window.innerWidth < 1024
-                            ? "-20px"
+                            ? "-22px"
                             : undefined,
                         marginBottom:
                           typeof window !== "undefined" &&
