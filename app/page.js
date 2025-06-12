@@ -663,15 +663,19 @@ const CyberSertaoApp = () => {
                 borderRadius: "16px",
                 padding: "0",
                 position: "relative",
-                maxWidth: "600px",
+                maxWidth: "1000px",
                 margin: "0 auto",
-                minHeight: "420px",
+                minHeight: "320px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "center",
                 overflow: "visible",
-                aspectRatio: "4/3",
+                width: "100%",
+                aspectRatio:
+                  typeof window !== "undefined" && window.innerWidth >= 1024
+                    ? "16/9"
+                    : "4/3",
               }}
             >
               <div
@@ -696,8 +700,12 @@ const CyberSertaoApp = () => {
                         maxWidth: "100%",
                         margin: "0 auto",
                         flex: 1,
-                        minHeight: "300px",
-                        aspectRatio: "4/3",
+                        minHeight: "200px",
+                        aspectRatio:
+                          typeof window !== "undefined" &&
+                          window.innerWidth >= 1024
+                            ? "16/9"
+                            : "4/3",
                       }}
                     >
                       <video
@@ -739,18 +747,28 @@ const CyberSertaoApp = () => {
                           ))}
                         </div>
                       </div>
+                      {/* Botões sobrepostos no mobile */}
+                      <div className="lg:hidden absolute bottom-4 left-0 right-0 flex justify-center items-center gap-4 z-20 pointer-events-auto">
+                        <CyberButton
+                          onClick={capturePhoto}
+                          variant="secondary"
+                          className="text-lg lg:text-xl"
+                        >
+                          CAPTURAR
+                        </CyberButton>
+                        <CyberButton
+                          onClick={() => {
+                            stopCamera();
+                            setCurrentScreen("upload");
+                          }}
+                          className="text-lg lg:text-xl"
+                        >
+                          ✕ CANCELAR
+                        </CyberButton>
+                      </div>
                     </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "16px",
-                        pointerEvents: "auto",
-                        padding: "0.5rem 0",
-                      }}
-                    >
+                    {/* Botões abaixo do vídeo no desktop */}
+                    <div className="hidden lg:flex flex-row items-center justify-center gap-4 pointer-events-auto mt-4">
                       <CyberButton
                         onClick={capturePhoto}
                         variant="secondary"
