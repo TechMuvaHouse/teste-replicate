@@ -19,22 +19,22 @@ const CyberSertaoApp = () => {
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const fileInputRef = useRef(null);
+  // const fileInputRef = useRef(null);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-        setCurrentScreen("preview");
-      };
-      reader.readAsDataURL(file);
-      setError(null);
-      setPrediction(null);
-    }
-  };
+  // const handleImageUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setSelectedImage(file);
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       setImagePreview(e.target.result);
+  //       setCurrentScreen("preview");
+  //     };
+  //     reader.readAsDataURL(file);
+  //     setError(null);
+  //     setPrediction(null);
+  //   }
+  // };
 
   const startCamera = async () => {
     try {
@@ -618,20 +618,20 @@ const CyberSertaoApp = () => {
               }}
             >
               <div style={{ position: "relative", zIndex: 3 }}>
-                <input
+                {/* <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
                   ref={fileInputRef}
                   className="hidden"
-                />
+                /> */}
                 <div className="relative z-10 flex flex-col gap-6 w-full max-w-sm mx-auto items-center justify-center h-full">
-                  <CyberButton
+                  {/* <CyberButton
                     onClick={() => fileInputRef.current?.click()}
                     className="text-xl lg:text-2xl"
                   >
                     ENVIAR FOTO
-                  </CyberButton>
+                  </CyberButton> */}
                   <CyberButton
                     onClick={startCamera}
                     variant="secondary"
