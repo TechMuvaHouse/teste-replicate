@@ -701,7 +701,10 @@ const CyberSertaoApp = () => {
                         style={{ background: "#000" }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                        <div className="relative">
+                        <div
+                          className="relative"
+                          style={{ transform: "translateY(15%)" }}
+                        >
                           <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
                           {[
                             "top-left",
