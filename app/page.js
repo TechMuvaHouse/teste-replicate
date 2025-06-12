@@ -706,6 +706,16 @@ const CyberSertaoApp = () => {
                           window.innerWidth >= 1024
                             ? "16/9"
                             : "4/3",
+                        marginTop:
+                          typeof window !== "undefined" &&
+                          window.innerWidth < 1024
+                            ? "10px"
+                            : undefined,
+                        marginBottom:
+                          typeof window !== "undefined" &&
+                          window.innerWidth < 1024
+                            ? "0"
+                            : undefined,
                       }}
                     >
                       <video
