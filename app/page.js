@@ -683,11 +683,22 @@ const CyberSertaoApp = () => {
                   position: "relative",
                   zIndex: 3,
                   width: "100%",
-                  height: "100%",
+                  height:
+                    typeof window !== "undefined" && window.innerWidth < 1024
+                      ? undefined
+                      : "100%",
                   padding: "1.5rem",
                   display: "flex",
                   flexDirection: "column",
                   gap: "1.5rem",
+                  alignItems:
+                    typeof window !== "undefined" && window.innerWidth < 1024
+                      ? "flex-start"
+                      : "center",
+                  paddingTop:
+                    typeof window !== "undefined" && window.innerWidth < 1024
+                      ? "14px"
+                      : undefined,
                 }}
               >
                 {showCamera && (
