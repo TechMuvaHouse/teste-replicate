@@ -663,15 +663,16 @@ const CyberSertaoApp = () => {
                 borderRadius: "16px",
                 padding: "0",
                 position: "relative",
-                maxWidth: "600px",
+                width: "100%",
+                maxWidth: "800px",
                 margin: "0 auto",
-                minHeight: "420px",
+                minHeight: "320px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "flex-start",
                 alignItems: "center",
                 overflow: "visible",
-                aspectRatio: "4/3",
+                aspectRatio: window.innerWidth >= 1024 ? "16/9" : "4/3",
               }}
             >
               <div
@@ -696,8 +697,8 @@ const CyberSertaoApp = () => {
                         maxWidth: "100%",
                         margin: "0 auto",
                         flex: 1,
-                        minHeight: "300px",
-                        aspectRatio: "4/3",
+                        minHeight: "200px",
+                        aspectRatio: window.innerWidth >= 1024 ? "16/9" : "4/3",
                       }}
                     >
                       <video
@@ -708,15 +709,24 @@ const CyberSertaoApp = () => {
                         className="absolute inset-0 w-full h-full object-cover object-center z-5 rounded-lg"
                         style={{
                           background: "#000",
-                          objectPosition: "center 30%",
+                          objectPosition: "center center",
                         }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div
                           className="relative"
-                          style={{ transform: "translateY(15%)" }}
+                          style={{
+                            width: window.innerWidth >= 1024 ? "35%" : "55%",
+                            height: window.innerWidth >= 1024 ? "60%" : "70%",
+                            minWidth: 120,
+                            minHeight: 120,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transform: "none",
+                          }}
                         >
-                          <div className="w-48 h-60 md:w-64 md:h-80 lg:w-80 lg:h-96 border-4 border-[#ff00ff] rounded-full opacity-70"></div>
+                          <div className="border-4 border-[#ff00ff] rounded-full opacity-70 w-full h-full"></div>
                           {[
                             "top-left",
                             "top-right",
@@ -725,7 +735,7 @@ const CyberSertaoApp = () => {
                           ].map((pos, i) => (
                             <div
                               key={i}
-                              className={`absolute w-6 h-6 lg:w-8 lg:h-8 border-4 border-[#ff00ff] ${
+                              className={`absolute w-4 h-4 md:w-6 md:h-6 border-2 md:border-4 border-[#ff00ff] ${
                                 pos === "top-left"
                                   ? "-top-2 -left-2 border-r-0 border-b-0 rounded-tl-lg"
                                   : pos === "top-right"
