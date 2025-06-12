@@ -716,6 +716,16 @@ const CyberSertaoApp = () => {
                           window.innerWidth < 1024
                             ? "0"
                             : undefined,
+                        overflow:
+                          typeof window !== "undefined" &&
+                          window.innerWidth < 1024
+                            ? "hidden"
+                            : undefined,
+                        borderRadius:
+                          typeof window !== "undefined" &&
+                          window.innerWidth < 1024
+                            ? "16px"
+                            : undefined,
                       }}
                     >
                       <video
