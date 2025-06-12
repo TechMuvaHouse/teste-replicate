@@ -729,7 +729,7 @@ const CyberSertaoApp = () => {
                           objectPosition:
                             typeof window !== "undefined" &&
                             window.innerWidth < 1024
-                              ? "center 20%"
+                              ? "center 10%"
                               : "center 30%",
                         }}
                       />
