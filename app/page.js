@@ -655,7 +655,7 @@ const CyberSertaoApp = () => {
           <img src="/linha_corte.png" alt="" className="linha-corte-img" />
           <div className="image-preview-area">
             <div
-              className="image-container terms-container"
+              className="image-container terms-container camera-container"
               style={{
                 boxShadow: "0 0 16px #ff00ff",
                 border: "2px solid #ff00ff",
@@ -674,6 +674,7 @@ const CyberSertaoApp = () => {
               }}
             >
               <div
+                className="camera-wrapper"
                 style={{
                   position: "relative",
                   zIndex: 3,
@@ -684,6 +685,7 @@ const CyberSertaoApp = () => {
                 {showCamera && (
                   <>
                     <div
+                      className="camera-view"
                       style={{
                         position: "relative",
                         width: "100%",
@@ -697,7 +699,7 @@ const CyberSertaoApp = () => {
                         autoPlay
                         playsInline
                         muted
-                        className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg"
+                        className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg camera-video"
                         style={{ background: "#000" }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
