@@ -726,7 +726,11 @@ const CyberSertaoApp = () => {
                         className="absolute inset-0 w-full h-full object-cover object-center z-5 rounded-lg"
                         style={{
                           background: "#000",
-                          objectPosition: "center 30%",
+                          objectPosition:
+                            typeof window !== "undefined" &&
+                            window.innerWidth < 1024
+                              ? "center 20%"
+                              : "center 30%",
                         }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
