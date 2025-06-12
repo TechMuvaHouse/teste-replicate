@@ -892,23 +892,3 @@ video {
     transform: translateY(20%);
   }
 }
-
-/* Camera container adjustments for desktop */
-@media (min-width: 1024px) {
-  .camera-container {
-    max-width: 800px !important;
-    min-height: 600px !important;
-  }
-
-  .camera-wrapper {
-    height: 580px !important;
-  }
-
-  .camera-view {
-    height: 580px !important;
-  }
-
-  .camera-video {
-    object-fit: contain !important;
-  }
-}

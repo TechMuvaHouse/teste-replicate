@@ -655,7 +655,7 @@ const CyberSertaoApp = () => {
           <img src="/linha_corte.png" alt="" className="linha-corte-img" />
           <div className="image-preview-area">
             <div
-              className="image-container terms-container camera-container"
+              className="image-container terms-container"
               style={{
                 boxShadow: "0 0 16px #ff00ff",
                 border: "2px solid #ff00ff",
@@ -674,24 +674,28 @@ const CyberSertaoApp = () => {
               }}
             >
               <div
-                className="camera-wrapper"
                 style={{
                   position: "relative",
                   zIndex: 3,
                   width: "100%",
-                  height: "400px",
+                  height: "100%",
+                  padding: "1.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "1.5rem",
                 }}
               >
                 {showCamera && (
                   <>
                     <div
-                      className="camera-view"
                       style={{
                         position: "relative",
                         width: "100%",
-                        height: "400px",
+                        height: "100%",
                         maxWidth: "100%",
                         margin: "0 auto",
+                        flex: 1,
+                        minHeight: "300px",
                       }}
                     >
                       <video
@@ -699,7 +703,7 @@ const CyberSertaoApp = () => {
                         autoPlay
                         playsInline
                         muted
-                        className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg camera-video"
+                        className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg"
                         style={{ background: "#000" }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
@@ -730,39 +734,34 @@ const CyberSertaoApp = () => {
                           ))}
                         </div>
                       </div>
-                      {/* Botões flutuando na base da box da câmera */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          right: 0,
-                          bottom: "-145px",
-                          zIndex: 30,
-                          display: "flex",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          gap: "16px",
-                          pointerEvents: "auto",
-                        }}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "16px",
+                        pointerEvents: "auto",
+                        padding: "0.5rem 0",
+                      }}
+                    >
+                      <CyberButton
+                        onClick={capturePhoto}
+                        variant="secondary"
+                        className="text-lg lg:text-xl"
                       >
-                        <CyberButton
-                          onClick={capturePhoto}
-                          variant="secondary"
-                          className="text-lg lg:text-xl"
-                        >
-                          CAPTURAR
-                        </CyberButton>
-                        <CyberButton
-                          onClick={() => {
-                            stopCamera();
-                            setCurrentScreen("upload");
-                          }}
-                          className="text-lg lg:text-xl"
-                        >
-                          ✕ CANCELAR
-                        </CyberButton>
-                      </div>
+                        CAPTURAR
+                      </CyberButton>
+                      <CyberButton
+                        onClick={() => {
+                          stopCamera();
+                          setCurrentScreen("upload");
+                        }}
+                        className="text-lg lg:text-xl"
+                      >
+                        ✕ CANCELAR
+                      </CyberButton>
                     </div>
                   </>
                 )}
