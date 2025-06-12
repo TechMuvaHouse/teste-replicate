@@ -671,6 +671,7 @@ const CyberSertaoApp = () => {
                 justifyContent: "flex-start",
                 alignItems: "center",
                 overflow: "visible",
+                aspectRatio: "4/3",
               }}
             >
               <div
@@ -696,6 +697,7 @@ const CyberSertaoApp = () => {
                         margin: "0 auto",
                         flex: 1,
                         minHeight: "300px",
+                        aspectRatio: "4/3",
                       }}
                     >
                       <video
@@ -703,8 +705,11 @@ const CyberSertaoApp = () => {
                         autoPlay
                         playsInline
                         muted
-                        className="absolute inset-0 w-full h-full object-cover object-top z-5 rounded-lg"
-                        style={{ background: "#000" }}
+                        className="absolute inset-0 w-full h-full object-cover object-center z-5 rounded-lg"
+                        style={{
+                          background: "#000",
+                          objectPosition: "center 30%",
+                        }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                         <div
